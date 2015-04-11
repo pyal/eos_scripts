@@ -1,0 +1,46 @@
+Name Matter ; MatterForDencClc
+
+Steel   MatterABu  { Material_File material.cfg Substance Steel-Tern  }
+Sapphir MatterABu  { Material_File material.cfg Substance Z-sapphir  }
+FeBad      MatterFreeE { FreeEBushman  { Material_File material.cfg   Substance fe_var_BushmanLiquid } } 
+Fe      MatterStable { TwoPhaseBndFile  fe_strt.unst.bin  UnstableMatter  MatterFreeE { FreeEBushman  { Material_File material.cfg   Substance fe_var_BushmanLiquid }  } }
+Ta      MatterABu  { Material_File material.cfg Substance Ta-Tern  }
+Al      MatterABu  { Material_File material.cfg Substance Al-Tern  }
+Pleks      MatterABu  { Material_File material.cfg Substance Pleks-Tern  }
+LiF     MatterABu  { Material_File material.cfg Substance LiF  }
+Pb   MatterABu  { Material_File material.cfg Substance Pb-Tern  }
+
+
+
+#H2  MatterSpl  { h2_mol_atom.spl  }  ;  FreeESumMatter   {  Material_File material.cfg Substance  MatterSumH2MolS   }
+H2  MatterSpl  { h2_claster9.spl  }  ;  FreeESumMatter   {  Material_File material.cfg Substance  MatterSumH2MolS   }
+H2f MatterSpl  { h2_mol_atom.spl  }  ;  FreeEIdeal  { Material_File material.cfg Substance  FreeEIdealH2  }
+H2dismet MatterSpl  { h2_dis_met_sarov.spl  }  ;  FreeESumMatter   {  Material_File material.cfg Substance  MatterSumH2MolS   }
+
+Ne  MatterSpl  { ne_spl_ion.spl  }   ;   FreeERossH2  {  FileParam material.cfg  NameSubstance  FreeERossNe  } 
+Xe  MatterSpl  { xe_ros.spl  }  
+N2      MatterSpl  { n2_ros1.spl  }  
+He      MatterSpl  { he_ros_e.spl  }  ; FreeERossN2  {  FileParam material.cfg  NameSubstance  FreeERossN2He1  } 
+
+Jupiter MatterSpl  { jup.spl  }  
+Saturn  MatterSpl  { saturnf.spl  }  
+SteelSplBad  MatterSpl  { steel.spl  }  
+FeSpl MatterSpl  { fe_liqgas.spl  }  
+CuSpl MatterSpl  { cu_liqgas.spl  }  
+
+HeIon      MatterSpl  { he_spl_ionOCP.spl  }  ; FreeEIdeal  { Material_File material.cfg Substance  FreeEIdealHe  }
+HeExt   MatterSpl  { he_ros_ide.spl  }  ;   FreeEIdeal { Material_File material.cfg Substance FreeEIdealHe }
+HeIde   MatterFreeE { FreeEIdeal { Material_File material.cfg Substance FreeEIdealHe } }  ;   FreeEIdeal { Material_File material.cfg Substance FreeEIdealHe }
+HeOld   MatterSpl  { he_ros_e.spl  }  ;   FreeEIdeal { Material_File material.cfg Substance FreeEIdealHe }
+
+Vacuum   MatterVacuum {  }
+
+Hexogen  MatterSum { Pres_Denc  1  Pressure1_2  0.5  Substances  MatterMurnaganBerch   { Material_File material.cfg Substance MurnaganGeks }  MatterZubarev   {  Material_File material.cfg Substance ZubarevGeks } } State
+
+PbSpl      TMatterSpl  { pb998.ispl  }  
+Pb1Spl      TMatterSpl  { pb256.ispl  }  
+CuSpl      TMatterSpl  { cu256.ispl  }  
+LiFSpl     MatterSpl  { lif_cal.spl  }  
+
+
+HeTestSpl   MatterFreeE { MatterFreeSpl { he.HeOCP.spl   } } 

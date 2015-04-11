@@ -1,0 +1,117 @@
+
+
+// ==========================================================================
+// =======================    He EOS construction   =========================
+// ==========================================================================
+// Cold_Vinet
+Vin_Ne  B0  6.36  B0prime  7.61  V0  9.11379    MolVeight  20  Z 10
+
+//FreeEElectronStrict
+//used for tomas-fermi EOS
+HeElectronZero           NumElPerAtom 2   MolVeight 4   Gfactor 2  ElMass_ElseNuclear  1 OutBoltzman 0   ColdCurve 1  ColdCurveTempCor 0
+HeElectron               NumElPerAtom 2   MolVeight 4   Gfactor 2  ElMass_ElseNuclear  1 OutBoltzman 0   ColdCurve 0  ColdCurveTempCor 0
+HeElectronBolt           NumElPerAtom 2   MolVeight 4   Gfactor 2  ElMass_ElseNuclear  1 OutBoltzman 1   ColdCurve 0  ColdCurveTempCor 0
+
+//used for ionization clc
+HeElectronBolt1          NumElPerAtom 1   MolVeight 4   Gfactor 2  ElMass_ElseNuclear  1 OutBoltzman 1   ColdCurve 0  ColdCurveTempCor 0
+HeElectronZero1          NumElPerAtom 1   MolVeight 4   Gfactor 2  ElMass_ElseNuclear  1 OutBoltzman 0   ColdCurve 1  ColdCurveTempCor 0
+HeElectron1              NumElPerAtom 1   MolVeight 4   Gfactor 2  ElMass_ElseNuclear  1 OutBoltzman 0   ColdCurve 0  ColdCurveTempCor 0
+
+//FreeEPureRoss HeRoss   // Yang McMahan Ross 1981 Phys Rev B  24 5119
+HeRoss     MolVeight 4 Zero 0 HiT 0 Exp6Part Exp_6_en 10.8  Exp_6_alph 13.1 Exp_6_r   2.9673  Exp_6_r0 0.0  CutDiameter 1  IncludePow6 1
+
+
+// FreeEIdeal
+HeIdeal   CvId 1.5 NMol 4 Zero 0 HiT 0  Tvib 0 Trot 0
+
+//FreeESumMatter
+HeSumEl {
+    Coef1   1
+    Matter1   FreeEElectronStrict { Material_File mat.he Substance HeElectron1 }
+    Coef1   -1
+    Matter1   FreeEElectronStrict { Material_File mat.he Substance HeElectronZero1 }
+}
+
+
+
+// Ioniz by CRC Handbook 10-178 24.58741 (2)  54.41778 (1)
+// ClcIonisation::FreeEIonDeby
+HeIonDeby  MolVeight 4  IonLevels {  L_1 0.00 G 1 L_2 24.58741 G 2 L_3 54.41778 G 1  }
+ElectronMatter  FreeESumMatter      { Material_File mat.he Substance HeSumEl }
+ElNumError 1e-08 ElNum2Error 1e-08
+
+
+// ClcIonisation::FreeEIonDebyHuckel
+HeIonOCP  MolVeight 4  IonLevels {  L_1 0.00 G 1 L_2 24.58741 G 2 L_3 54.41778 G 1  }
+ElectronMatter  FreeESumMatter      { Material_File mat.he Substance HeSumEl }
+ElNumError 1e-08 ElNum2Error 1e-08 CorrectName OCP
+
+HeIonOCPb  MolVeight 4  IonLevels {  L_1 0.00 G 1 L_2 24.58741 G 2 L_3 54.41778 G 1  }
+ElectronMatter  FreeEElectronStrict { Material_File mat.he Substance HeElectronBolt1 }
+ElNumError 1e-08 ElNum2Error 1e-08 CorrectName OCP
+
+
+HeIonOCPz  MolVeight 4  IonLevels {  L_1 0.00 G 1 L_2 24.58741 G 2 L_3 54.41778 G 1  }
+ElectronMatter  FreeESumMatter      { Material_File mat.he Substance HeSumEl }
+ElNumError 1e-08 ElNum2Error 1e-08 CorrectName Zer
+
+// ClcIonisation::ClcSimpleIon
+HeIonAdd  MolVeight 4  IonLevels {  L_1 0.00 G 1 L_2 24.58741 G 2 L_3 54.41778 G 1  }
+ElectronMatter  FreeESumMatter      { Material_File mat.he Substance HeSumEl }
+ElNumError 1e-08
+
+//FreeESumMatter
+HeRosSum  {
+    Coef1   1
+    Matter1   FreeEPureRoss  {  Material_File mat.he  Substance HeRoss  }
+    Coef2   1
+    Matter2   FreeEIdeal {  Material_File mat.he   Substance HeIdeal  }
+    Coef3   1
+    Matter3   ClcIonisation::FreeEIonSimple {  Material_File mat.he   Substance HeIonAdd  }
+}
+HeRosSumSpl  {
+    Coef1   1
+    Matter1   MatterFreeSpl  {  HeRossPure.spl  }
+    Coef2   1
+    Matter2   FreeEIdeal {  Material_File mat.he   Substance HeIdeal  }
+    Coef3   1
+    Matter3   ClcIonisation::FreeEIonSimple {  Material_File mat.he   Substance HeIonAdd  }
+}
+HeRosSumOCP  {
+    Coef1   1
+    Matter1   FreeEPureRoss  {  Material_File mat.he  Substance HeRoss  }
+    Coef2   1
+    Matter2   FreeEIdeal {  Material_File mat.he   Substance HeIdeal  }
+    Coef3   1
+    Matter3   ClcIonisation::FreeEIonDebyHuckel {  Material_File mat.he   Substance HeIonOCP  }
+}
+HeRosSumOCPSpl  {
+    Coef1   1
+    Matter1   MatterFreeSpl  {  HeRossPure.spl  }
+    Coef2   1
+    Matter2   FreeEIdeal {  Material_File mat.he   Substance HeIdeal  }
+    Coef3   1
+    Matter3   ClcIonisation::FreeEIonDebyHuckel {  Material_File mat.he   Substance HeIonOCP  }
+
+}
+
+HeRosSumOCPbSpl  {
+    Coef1   1
+    Matter1   MatterFreeSpl  {  HeRossPure.spl  }
+    Coef2   1
+    Matter2   FreeEIdeal {  Material_File mat.he   Substance HeIdeal  }
+    Coef3   1
+    Matter3   ClcIonisation::FreeEIonDebyHuckel {  Material_File mat.he   Substance HeIonOCPb  }
+
+}
+HeRosPureSumSpl  {
+    Coef1   1
+    Matter1   MatterFreeSpl  {  HeRossPure.spl  }
+    Coef2   1
+    Matter2   FreeEIdeal {  Material_File mat.he   Substance HeIdeal  }
+}
+
+// ==========================================================================
+// =======================    He EOS construction   =========================
+// =======================        E  N  D           =========================
+// ==========================================================================

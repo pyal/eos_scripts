@@ -1,0 +1,191 @@
+
+
+// FreeEElectron
+H2Electron  NumEl  1 MolVeight 1 Zero 0 HiT  0
+
+// FreeEElectronStrict
+HElectronS                NumElPerAtom 1   MolVeight 1   Gfactor 2  ElMass_ElseNuclear  1 OutBoltzman 0  ColdCurve 0  ColdCurveTempCor 0
+//HElectronBolt                NumElPerAtom 1   MolVeight 1   Gfactor 2  ElMass_ElseNuclear  1 OutBoltzman 1  ColdCurve 0  ColdCurveTempCor 0
+HElectronZero                NumElPerAtom 1   MolVeight 1   Gfactor 2  ElMass_ElseNuclear  1 OutBoltzman 0   ColdCurve 1  ColdCurveTempCor 0
+//HElectronZeroCor                NumElPerAtom 1   MolVeight 1   Gfactor 2  ElMass_ElseNuclear  1 OutBoltzman 0   ColdCurve 0  ColdCurveTempCor 1
+
+
+
+
+
+
+// FreeEIdeal
+IdealHMol      CvId 1.5 NMol 2 Zero 0 HiT 0  Tvib 6390 Trot 170.8
+IdealHAtom   CvId 1.5 NMol 1 Zero 216 HiT -0.69315  Tvib 0 Trot 0
+IdealHMet    CvId 1.5 NMol 1 Zero 0 HiT -0.  Tvib 0 Trot 0
+IdealH   CvId 1.5 NMol 1 Zero 0 HiT -0.69315  Tvib 0 Trot 0
+
+IdealHMetTrans   CvId 1.5 NMol 1 Zero 60 HiT -0  Tvib 0 Trot 0
+//Was for some reason? Error? HiT -0.69315  ? No... Looks yes, OK.
+IdealHMetTrans CvId 1.5 NMol 1 Zero 2 HiT  -0.69315    Tvib 0 Trot 0
+
+IdealHMetTrans   CvId 1.5 NMol 1 Zero 60 HiT -0  Tvib 0 Trot 0
+IdealHMetTransSarov   CvId 1.5 NMol 1 Zero 75 HiT -0  Tvib 0 Trot 0
+
+
+
+
+
+//FreeEDis
+ Mol_Atom_Old
+    EnterMinimClass DisFindMinimE {
+       MinimizeVolumes  1  MinimRelatNum  Dis_RelatNum_MinimFunc_SingleH2 { }
+    }
+    EnterList_SubsName_FreeESubstance_SubsMolVeight {
+       Name Mol MolVeight 2 StartProportion 1 RelatVolumeCoef 2 SubstMixtures 1 MatterFreeE FreeESumMatter {  FileName  mat.bad Substance MatterSumH2Mol    } ;
+       Name Atom MolVeight 1 StartProportion 0 RelatVolumeCoef 1 SubstMixtures 1 MatterFreeE FreeESumMatter {  FileName  mat.bad Substance MatterSumH2Atom  } ;
+    }
+    EnterListOfVectors_Vector_SubsName_SubsCoef {  {   Mol -1      Atom 2     } }
+
+ Mol_Atom_Gen_Old
+    EnterMinimClass DisFindMinimE {
+       MinimizeVolumes  1  MinimRelatNum  Dis_RelatNum_MinimFunc_Single { }
+    }
+    EnterList_SubsName_FreeESubstance_SubsMolVeight {
+       Name Mol MolVeight 2 StartProportion 1 RelatVolumeCoef 2 SubstMixtures 1 MatterFreeE FreeESumMatter {  FileName  mat.bad Substance MatterSumH2Mol    } ;
+       Name Atom MolVeight 1 StartProportion 0 RelatVolumeCoef 1 SubstMixtures 1 MatterFreeE FreeESumMatter {  FileName  mat.bad Substance MatterSumH2Atom  } ;
+    }
+    EnterListOfVectors_Vector_SubsName_SubsCoef {  {   Mol -1      Atom 2     } }
+
+ Mol_Atom
+    EnterMinimClass PureDis_FindE {
+      FixedNumVolCoefs 0  MinPres  PureDis_Minim1Pres {
+          MinVal  0.5  MaxVal  5  MaxDenc  2.5  FixedVolumeCoef  0
+     }
+    }
+    EnterList_SubsName_FreeESubstance_SubsMolVeight {
+       Name Mol MolVeight 2 StartProportion 1 RelatVolumeCoef 2 SubstMixtures 1 MatterFreeE FreeESumMatter {  FileName  mat.bad Substance MatterSumH2Mol    } ;
+       Name Atom MolVeight 1 StartProportion 0 RelatVolumeCoef 1 SubstMixtures 1 MatterFreeE FreeESumMatter {  FileName  mat.bad Substance MatterSumH2Atom  } ;
+    }
+    EnterListOfVectors_Vector_SubsName_SubsCoef {  {   Mol -1      Atom 2     } }
+
+
+
+// FreeESumMatter
+MatterSumH2Mol  {
+    Coef1   1
+    Matter1   MatterFreeSpl {   H2Mod_Mol.spl }
+    Coef2   1
+    Matter2   FreeEIdeal   {  Material_File mat.bad Substance IdealHMol  }
+}
+MatterSumH2Atom  {
+    Coef1   1
+    Matter1   MatterFreeSpl  {  H2Mod_Met.spl  }
+    Coef2   1
+    Matter2   FreeEIdeal {  Material_File mat.bad Substance IdealHAtom  }
+}
+
+MatterSumH2Met  {
+    Coef1   1
+    Matter1   MatterFreeSpl  { H2Mod_Met.spl  }
+    Coef2   -1
+    Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronZero                }
+    Coef2   1
+    Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronS }
+    Coef3   1
+    Matter3   FreeEIdeal     { Material_File mat.bad Substance IdealHMetTrans    }
+}
+
+
+MatterSumH2MetCorr  {
+    Coef1   1
+    Matter1   MatterFreeSpl  { H2Mod_Met.spl  }
+    Coef2   -1
+    Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronZero  }
+    Coef2   1
+    Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronS }
+    Coef3   1
+    Matter3   FreeEIdeal     { Material_File mat.bad Substance IdealHMetTrans   }
+    Coef4   1
+    Matter4   FreeEFormula   { Material_File mat.bad Substance FormMetCorr  }
+}
+
+MatterSumH2MetCorrSarov  {
+    Coef1   1
+    Matter1   MatterFreeSpl  { H2Mod_Met.spl  }
+    Coef2   -1
+    Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronZero  }
+    Coef2   1
+    Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronS }
+    Coef3   1
+    Matter3   FreeEIdeal     { Material_File mat.bad Substance IdealHMetTransSarov   }
+    Coef4   1
+    Matter4   FreeEFormula   { Material_File mat.bad Substance FormMetCorr  }
+}
+
+
+
+
+FormMetCorr
+     EndSymbol }
+double MolVeight,Eioniz,Ediss,deltaE,CenterDenc,Width,Eadd;
+Eioniz=15.4271; //eV/mol
+Ediss=  432.006; //kJ/mol
+deltaE=Ediss/2+M_eV_kJ*M_Na*Eioniz;
+MolVeight=1;
+CenterDenc=0.3;
+Width=0.01;
+
+ Eadd=1/M_PI*atan(((Denc-CenterDenc)/Width));
+ FreeE=deltaE*(0.5-Eadd);
+
+}
+
+
+
+
+//   FreeELiqSol
+AtomMet_2Phase
+ MatHghTemp FreeESumMatter  {  Material_File mat.bad Substance MatterSumH2MetCorr  }
+ MatLowTemp FreeEDis              {  Material_File mat.bad Substance Mol_Atom   }
+     Bnd FreeELiqSol_Bnd            {  NameBndSplFile h2_dismet_bnd.bin  }
+
+AtomMet_2PhaseSarov
+ MatHghTemp FreeESumMatter  {  Material_File mat.bad Substance MatterSumH2MetCorrSarov  }
+ MatLowTemp FreeEDis              {  Material_File mat.bad Substance Mol_Atom   }
+     Bnd FreeELiqSol_Bnd            {  NameBndSplFile h2_dismet_bnd_sarov.bin  }
+
+
+
+
+
+
+// Test only...
+// FreeESumMatter
+MatterSumH2MolStrict  {
+    Coef1   1
+    Matter1   FreeEPureRoss  {  Material_File matter_sum.cfg   Substance H2Mod_Mol  }
+    Coef2   1
+    Matter2   FreeEIdeal   {  Material_File mat.bad Substance IdealHMol  }
+}
+MatterSumH2MetStrict  {
+    Coef1   1
+    Matter1   FreeEPureRoss  {  Material_File matter_sum.cfg   Substance H2Mod_Met  }
+    Coef2   -1
+    Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronZero                }
+    Coef2   1
+    Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronS }
+    Coef3   1
+    Matter3   FreeEIdeal     { Material_File mat.bad Substance IdealHMet    }
+}
+MatterSumH2MetCorStrict  {
+    Coef1   1
+    Matter1   FreeEPureRoss  {  Material_File matter_sum.cfg   Substance H2Mod_Met  }
+    Coef2   -1
+    Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronZero                }
+    Coef2   1
+    Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronS }
+    Coef3   1
+    Matter3   FreeEIdeal     { Material_File mat.bad Substance IdealHMetTrans   }
+    Coef4   1
+    Matter4   FreeEFormula   { Material_File mat.bad Substance FormMetCorr  }
+
+}
+
+
+
