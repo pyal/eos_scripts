@@ -6,14 +6,14 @@ MkName := $(shell basename $(mkscript))
 MkPref := $(shell basename $(mkscript) .mk)
 ScriptDir := $(shell cd $(dir $(mkscript));pwd)
 BaseDir   := $(shell cd $(ScriptDir);cd ..;pwd)
-UserName := $(shell whoami)
-markstep = touch $(notdir $@)
 
-#DataDir :=$(BaseDir)/data
-#SVNADDR:=https://ppp_pyal:8443/svn/
-SVNADDR:=https://pyal-nb-w7.ld.yandex.ru/svn
 
-RunCommand = bash -exvc ". $(ScriptDir)/messb.sh; $1"
+ifeq ($(shell [ -s $(ScriptDir)/cinc.mk ] && echo ok),ok)
+include $(ScriptDir)/cinc.mk
+else
+GITROOT=https://github.com/pyal/eos_scripts.git
+gitdir:=git/eos_scripts
+endif
 
 
 
@@ -54,37 +54,33 @@ clc1.dst :
 
 
 
-expdir=root/scripts
 ScriptFiles := messb/$(MkPref).mk messb/$(MkPref).sh 
 
 
 updatescript.dst :
-	rm -rf $(expdir) && mkdir -p $(expdir);
-	svn co $(SVNADDR)/$(expdir) $(expdir) > NULL
+	rm -rf $(gitdir) && mkdir -p $(gitdir);
+	git clone  $(GITROOT) $(gitdir) > NULL
 	for aa in $(ScriptFiles) ; do \
 		bb=$$(basename $$aa) ;\
-		cp $(expdir)/$$aa $(ScriptDir)/$$bb ;\
+		cp $(gitdir)/$$aa $(ScriptDir)/$$bb ;\
 	done
-	rm -rf $(expdir) NULL
+	rm -rf $(gitdir) NULL
 	chmod uog=rwx $(ScriptDir)/*
 
 
 
 exportscript.dst :
 ifndef EXPAND
-	rm -rf $(expdir)
+	rm -rf $(gitdir)
 endif
-	mkdir -p $(expdir)
-	svn co $(SVNADDR)/$(expdir) $(expdir) > NULL
+	mkdir -p $(gitdir)
+	git clone  $(GITROOT) $(gitdir) > NULL
 	for aa in $(ScriptFiles) ; do \
 		bb=$$(basename $$aa) ;\
-		cp $(ScriptDir)/$$bb $(expdir)/$$aa || echo leaving file $$bb;\
+		cp $(ScriptDir)/$$bb $(gitdir)/$$aa || echo leaving file $$bb;\
 	done
 	rm -f NULL
 
 showdiff.dst : exportscript.dst
-	cd $(expdir); svn stat | grep -w M | gawk '{print $$2}' | sed 's/\\/\//g' | xargs -n1 svn diff
-
-
-commit.dst :
-	cd $(expdir); svn ci -m "minor change"
+	$(call ShowDiff, $(gitdir)/scripts)
+	$(call ShowDiffF, $(gitdir)/matters)
