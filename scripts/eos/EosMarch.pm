@@ -13,7 +13,7 @@ sub P_RE($) {
     UrsCurve::RebuildBnd($Cfg->{Cfg}, "R:E");
     my $matter = join(" ", @{$Cfg->GetMatter($Cfg->{Cfg}{Mat})});
     my %rename = (P => "EOS.Pressure", R=> "Dencity", E=>"Energy", S=>"EOS.Sound", T=>"EOS.Temperature");
-    my @out = map { $rename{$_} } split(":", $Cfg->{Cfg}{Out});
+    my @out = map { if (defined($rename{$_})) {$rename{$_}} else { $_ } } split(":", $Cfg->{Cfg}{Out});
     my $out = join(" ", @out);
     my $num = $Cfg->{Cfg}{R}{NumDivStp} * $Cfg->{Cfg}{E}{NumDivStp};
     open(OUT, ">".CfgReader::MakeWinName($Cfg->GetOutBaseName()).".cfg");
@@ -48,8 +48,8 @@ sub Isentrope($) {
     UrsCurve::Check($Cfg->{Cfg}, "R:Mat:Out:StartE:StartU");
     UrsCurve::RebuildBnd($Cfg->{Cfg}, "R");
     my $matter = join(" ", @{$Cfg->GetMatter($Cfg->{Cfg}{Mat})});
-    my %rename = (P => "EOS.Pressure", R=> "Dencity", E=>"Isent.Energy", T=>"EOS.Temperature", U=>"Isent.Velocity");
-    my @out = map { $rename{$_} } split(":", $Cfg->{Cfg}{Out});
+    my %rename = (P => "EOS.Pressure", R=> "Dencity", E=>"Isent.Energy", T=>"EOS.Temperature", U=>"Isent.Velocity", S=>"EOS.Sound");
+    my @out = map { if (defined($rename{$_})) {$rename{$_}} else { $_ } } split(":", $Cfg->{Cfg}{Out});
     my $out = join(" ", @out);
     my $num = $Cfg->{Cfg}{R}{NumDivStp};
     open(OUT, ">".CfgReader::MakeWinName($Cfg->GetOutBaseName()).".cfg");
@@ -85,8 +85,8 @@ sub HugDenc($) {
     UrsCurve::Check($Cfg->{Cfg}, "R:Mat:Out:StartE:StartR");
     UrsCurve::RebuildBnd($Cfg->{Cfg}, "R");
     my $matter = join(" ", @{$Cfg->GetMatter($Cfg->{Cfg}{Mat})});
-    my %rename = (P => "EOS.Pressure", R=> "Hug.Dencity", E=>"Hug.Energy", T=>"EOS.Temperature", U=>"Hug.Velocity");
-    my @out = map { $rename{$_} } split(":", $Cfg->{Cfg}{Out});
+    my %rename = (P => "EOS.Pressure", R=> "Hug.Dencity", E=>"Hug.Energy", T=>"EOS.Temperature", U=>"Hug.Velocity", S=>"EOS.Sound");
+    my @out = map { if (defined($rename{$_})) {$rename{$_}} else { $_ } } split(":", $Cfg->{Cfg}{Out});
     my $out = join(" ", @out);
     my $num = $Cfg->{Cfg}{R}{NumDivStp};
     open(OUT, ">".CfgReader::MakeWinName($Cfg->GetOutBaseName()).".cfg");
@@ -123,8 +123,8 @@ sub HugPres($) {
     UrsCurve::RebuildBnd($Cfg->{Cfg}, "P");
     #my $matter = join(" ", @{$Cfg->GetMatter($Cfg->{Cfg}{Mat})});
     my $matter = $Cfg->GetMatter($Cfg->{Cfg}{Mat})->[0];
-    my %rename = (P => "EOS.Pressure", R=> "Hug.Dencity", E=>"Hug.Energy", T=>"EOS.Temperature", U=>"Hug.Velocity");
-    my @out = map { $rename{$_} } split(":", $Cfg->{Cfg}{Out});
+    my %rename = (P => "EOS.Pressure", R=> "Hug.Dencity", E=>"Hug.Energy", T=>"EOS.Temperature", U=>"Hug.Velocity", S=>"EOS.Sound");
+    my @out = map { if (defined($rename{$_})) {$rename{$_}} else { $_ } } split(":", $Cfg->{Cfg}{Out});
     my $out = join(" ", @out);
     my $num = $Cfg->{Cfg}{P}{NumDivStp};
     open(OUT, ">".CfgReader::MakeWinName($Cfg->GetOutBaseName()).".cfg");
@@ -167,7 +167,7 @@ sub P_RT($) {
     #my $matter = join(" ", @{$Cfg->GetMatter($Cfg->{Cfg}{Mat})});
     my $matter = $Cfg->GetMatter($Cfg->{Cfg}{Mat})->[0];
     my %rename = (P => "EOS.Pressure", R=> "Dencity", E=>"EOS.Energy", S=>"EOS.Sound", T=>"Temperature");
-    my @out = map { $rename{$_} } split(":", $Cfg->{Cfg}{Out});
+    my @out = map { if (defined($rename{$_})) {$rename{$_}} else { $_ } } split(":", $Cfg->{Cfg}{Out});
     my $out = join(" ", @out);
     my $num = $Cfg->{Cfg}{R}{NumDivStp} * $Cfg->{Cfg}{T}{NumDivStp};
     open(OUT, ">".CfgReader::MakeWinName($Cfg->GetOutBaseName()).".cfg");
@@ -203,7 +203,7 @@ sub P_RT_Caloric($) {
     #my $matter = join(" ", @{$Cfg->GetMatter($Cfg->{Cfg}{Mat})});
     my $matter = $Cfg->GetMatter($Cfg->{Cfg}{Mat})->[0];
     my %rename = (P => "EOS.Pressure", R=> "Dencity", E=>"Energy", S=>"EOS.Sound", T=>"EOS.Temperature");
-    my @out = map { $rename{$_} } split(":", $Cfg->{Cfg}{Out});
+    my @out = map { if (defined($rename{$_})) {$rename{$_}} else { $_ } } split(":", $Cfg->{Cfg}{Out});
     my $out = join(" ", @out);
     my $num = $Cfg->{Cfg}{R}{NumDivStp} * $Cfg->{Cfg}{T}{NumDivStp};
     open(OUT, ">".CfgReader::MakeWinName($Cfg->GetOutBaseName()).".cfg");

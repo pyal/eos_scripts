@@ -17,6 +17,17 @@ sub new     #01.09.2005 13:04
     return $Params;
 }   ##new
 
+###########################################################################
+sub newExplicit     #01.09.2005 13:04
+############################################################################
+ {
+    my ($work_dir, $clc_file, $clc_name, $matter_file, $resultOutDir, $config) = @_;
+    $resultOutDir = $clc_name   if (!defined($resultOutDir));
+    my $Params = {CfgFile=>$clc_file, ClcName=>$clc_name, MatterFile=>$matter_file, WorkDir=>$work_dir, ResultOutDir=>$resultOutDir};
+    $Params->{Cfg} = $config;
+    bless $Params, "CfgReader";
+    return $Params;
+}   ##new
 
 ############################################################################
 sub CheckSet        #10/31/2007 12:08

@@ -8,7 +8,8 @@ MkPref := $(shell basename $(mkscript) .mk)
 ScriptDir := $(shell cd $(dir $(mkscript));pwd)
 BaseDir   := $(shell cd $(ScriptDir);cd ..;pwd)
 
-WorkDir   := $(shell pwd)/run
+#WorkDir   := $(shell pwd)/run
+WorkDir   := $(ScriptDir)/run
 MatterDir := $(BaseDir)/matters
 
 ifeq ($(shell [ -s $(ScriptDir)/cinc.mk ] && echo ok),ok)
@@ -22,6 +23,11 @@ CheckCfg.dst :
 	$(call CheckCommand,BASE)
 	$(call CheckCommand,CFGFILE)
 	mkdir -p $(WorkDir) || echo wau
+# optional RESULTDIR - where to write results
+
+CheckDescription.dst :
+	$(call CheckCommand,CFGFILE)
+	mkdir -p $(WorkDir) || echo wau
 
 getmatter.dst :
 	cd $(WorkDir);make -f $(ScriptDir)/mat.mk getmatter.dst
@@ -31,14 +37,20 @@ getscript.dst : getmatter.dst
 	cp $(ScriptDir)/* $(WorkDir)  || echo WAU
 	#$(markstep)
 
-run.dst : getscript.dst CheckCfg.dst
+run.dst : CheckCfg.dst getscript.dst 
 	CfgDir=$$(cd $$(dirname $$CFGFILE);pwd) ;\
-		cd $(WorkDir); perl $(ScriptDir)/$(MkPref).pl $(WorkDir) $$CfgDir/$(basename $$CFGFILE) matter_name.txt $$BASE $$RESULTDIR
+		cd $(WorkDir);$(call RunCommand,SingleJob $$CfgDir/$(basename $$CFGFILE) matter_name.txt $$BASE $$RESULTDIR)
+		#cd $(WorkDir); perl $(ScriptDir)/$(MkPref).pl $(WorkDir) $$CfgDir/$(basename $$CFGFILE) matter_name.txt $$BASE $$RESULTDIR
+
+multi.dst : CheckDescription.dst getscript.dst
+	CfgDir=$$(cd $$(dirname $$CFGFILE);pwd) ;\
+		cd $(WorkDir);$(call RunCommand,MultiJob $$CfgDir/$(basename $$CFGFILE) matter_name.txt $$CfgDir)
+
+dat.dst : CheckDescription.dst
+	$(call RunCommand,ShowDat $$CFGFILE)
 
 
-
-
-$(MkPref).files := scripts/eos/$(MkPref).mk scripts/eos/$(MkPref).pl scripts/eos/$(MkPref).cfg scripts/common/CfgReader.pm scripts/eos/EosMarch.pm
+$(MkPref).files := scripts/eos/$(MkPref).mk scripts/eos/$(MkPref).pl scripts/eos/$(MkPref).cfg scripts/eos/$(MkPref).sh scripts/common/CfgReader.pm scripts/eos/EosMarch.pm
 $(MkPref).files := $($(MkPref).files) scripts/common/mat.mk scripts/common/UrsCurve.pm
 
 updatescript.dst :
