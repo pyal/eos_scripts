@@ -1,0 +1,95 @@
+eos.mk script is used for generation theoretical curves, comparison them with experiment.
+
+Installation:
+
+get, copy eos.mk script to base scripting directory.
+run command (cygwin shell)
+make -f eos.mk updatescript.dst
+
+This will install scripts to current (BASE) directory, create BASE/../matters with all matters known
+
+Usage:
+
+Go to any directory, create there some configuration file to do computation.
+1. Compare theory and experiment:
+Configuration file format:
+
+
+    EggertData us up   data (precompressed liquid he) init dense = 3.5 ; 2.3 ; 1.8 ; 1.5 ; 1
+    Curve HugPres Mat HeTestSpl P 1e-4:200:200:1 StartR 0.4305 StartE 0.8  Out R:P  
+    Script awk 'NR>1{print $1/0.4305, $2 }'
+    Curve HugPres Mat HeTestSpl P 1e-4:200:200:1 StartR 0.2829 StartE 0.8  Out R:P
+    Script awk 'NR>1{print $1/0.2829, $2 }'
+    Curve HugPres Mat HeTestSpl P 1e-4:200:200:1 StartR 0.2214 StartE 0.8  Out R:P
+    Script awk 'NR>1{print $1/0.2214, $2 }'    
+    Curve HugPres Mat HeTestSpl P 1e-4:200:200:1 StartR 0.1845 StartE 0.8  Out R:P
+    Script awk 'NR>1{print $1/0.1845, $2 }'
+    Name liquidDencityStart Curve HugPres Mat HeTestSpl P 1e-4:200:200:1 StartR 0.123  StartE 0.8  Out R:P
+    Script awk 'NR>1{print $1/0.123, $2 }'
+    Data  Compression ()   P (Gpa)
+  2.9739	182.516				
+  3.0220	148.457				
+  3.4910	198.701				
+  3.1904		108.918			
+  3.9359		196.291			
+  3.6353			85.9607		
+  4.5611			139.733		
+  5.4028				113.658	
+  5.3788					50.9918
+  6.1122					117.166
+  6.3407					86.4769
+4.0835					34.4915
+4.9691					60.8305
+5.3684					50.8644
+5.6951					85.3898
+6.1162					117.7797
+6.3412					86.1017
+
+Lines till Curve - are description
+
+Curve - theoretical curve to calculate. Take different Curve descriptions / definitions
+from eos.cfg file (remove naming for them)
+after Curve can define Script - to do post computation ( here we are normalizing density) -
+this line will be taken as is and put into expression:
+cat theoretical_curve | Script > output_file
+
+You can define as many Curve s as you wish, any line which do not match format - treated as end of Curve block.
+
+After computation by default curves will be created with names: originalConfigName.CurveNumber.
+You can put curve definfition in the format
+
+Name liquidDencityStart Curve HugPres Mat HeTestSpl P 1e-4:200:200:1 StartR 0.123  StartE 0.8  Out R:P
+
+This allows us to define result file name for theoretical curve
+to save result curve not by numbers but with valuable names. This will generate result file name
+originalConfigName.liquidDencityStart
+
+
+Genrated curves will be put in one file (originalConfigName.sum) with experimental points taken from the same config.
+It will try to put them in order
+Xpoints, Experiment1, Curve1, Experiment2, Curve2....
+Experimental points have to be tab formatted (tab used as field delimiter)
+
+
+
+2. Generate multiple theoretical curves:
+Configuration file format:
+
+Generating a set of cold curves
+InputFile data.input
+Name pres.{4}.dat Curve HugPres Mat HeTestSpl P 1e-4:50:200:1 StartR {2} StartE {3}  Out U:R:P:T:S  
+
+First line after description have to be
+InputFile data.input
+
+We set data file with several columns as input.
+Next lines - are same as before - Curve definition.
+In this curve definition we can use data from InputFile.
+{X} - means we want to set variable using given X column from current row of input file.
+So for each row we generate different config for curve calculation, do the job, save results.
+
+
+After config files created you can execute the job:
+CFGFILE=he.hug.dat make -f $EOS_INSTALL_DIR/eos.mk multi.dst
+
+This will generate required data.
