@@ -93,3 +93,16 @@ After config files created you can execute the job:
 CFGFILE=he.hug.dat make -f $EOS_INSTALL_DIR/eos.mk multi.dst
 
 This will generate required data.
+
+To view data - use data.sh from common directory in current repo.
+data.sh datafile (with space delimited columns)
+
+To view comma delimited file (generated sum file with theoretical and experimental points will be comma delimited)
+do:
+export SEP='","'
+export LINESTYLE=" with linespoints " # can do it to view files in better default format
+data.sh datafile.sum
+
+to view normal file after that call:
+export SEP=
+data.sh datafile
