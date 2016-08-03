@@ -16,6 +16,7 @@ Pb   MatterABu  { Material_File material.cfg Substance Pb-Tern  }
 H2  MatterSpl  { h2_claster9.spl  }  ;  FreeESumMatter   {  Material_File material.cfg Substance  MatterSumH2MolS   }
 H2f MatterSpl  { h2_mol_atom.spl  }  ;  FreeEIdeal  { Material_File material.cfg Substance  FreeEIdealH2  }
 H2dismet MatterSpl  { h2_dis_met_sarov.spl  }  ;  FreeESumMatter   {  Material_File material.cfg Substance  MatterSumH2MolS   }
+D2 MatterFreeE { MatterFreeSpl { d2claster_f.spl } } ;  FreeESumMatter   {  Material_File material.cfg Substance  MatterSumD2MolS   }
 
 Ne  MatterSpl  { ne_spl_ion.spl  }   ;   FreeERossH2  {  FileParam material.cfg  NameSubstance  FreeERossNe  } 
 Xe  MatterSpl  { xe_ros.spl  }  
