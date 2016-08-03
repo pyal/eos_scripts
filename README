@@ -1,1 +1,21 @@
 scripts to work with eos programms
+
+
+To start gasd calculation in directory DIR we have to get scripts/gasd/gasd.mk from
+https://github.com/pyal/eos_scripts.git
+and store it as
+DIR/scripts/gasd.mk
+
+After that to update scripts and matters have to run:
+make -f scripts/gasd.mk updatescript.dst
+
+It will upload files from git repo, install directories: DIR/matters ; DIR/run
+Upload scripts to DIR/scripts
+Create directory DIR/git - with git content
+
+cp git/eos_scripts/scripts/gasd/gasd.cfg .
+This will copy gasd.cfg file with calculation configuratrion examples to DIR/gasd.cfg
+
+To calculate configuration [ D2 ] from [ gasd.cfg ] do:
+BASE=D2 CFGFILE=gasd.cfg make -f scripts/gasd.mk run.dst
+
