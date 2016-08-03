@@ -130,7 +130,7 @@ sub SetStdPar     #10/18/2007 8:14
     my $l;
     while($l = $inp->getline()){
         my @l = split(" ",$l);
-        next        if (lc($l[0]) ne lc($clc_name) || $l[1] ne "{");
+        next        if (int(@l) == 0 || lc($l[0]) ne lc($clc_name) || $l[1] ne "{");
         shift(@l);shift(@l);
         @line = @l;
         $EndFound = 0;

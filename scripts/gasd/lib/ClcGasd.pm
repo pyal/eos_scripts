@@ -243,7 +243,7 @@ sub PackParams		#09/19/2007 12:37
     my ($ClcName, $ShowE, $ShowT, $ClcLayer, $ClcTime, $TimeCoef) = @_;
 	my %Par;
     #my $modClcName = $ClcName;
-    $ClcName =~ s/\/cygdrive\/c/c\:/g;
+    $ClcName =~ s/\/cygdrive\/(.)/$1\:/g;
 	$Par{ClcName} = $ClcName;
 	$Par{ClcLayer} = $ClcLayer;
 	$Par{ShowE} = $ShowE;
