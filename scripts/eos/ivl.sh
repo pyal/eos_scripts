@@ -3,13 +3,14 @@
 
 #IsoT $(TEMP) temper.in volume.in pressure.tab $(IVLDAT) isot.$(TEMP) )
 IsoT() {
-T=$1
-Tfile=$2
-Vfile=$3
-Z_VTfile=$4
-DatDir=$5
-IDformat=$6
-Out=$7
+    local T=$1
+    local Tfile=$2
+    local Vfile=$3
+    local Z_VTfile=$4
+    local DatDir=$5
+    local IDformat=$6
+    local Out=$7
+
     cat $DatDir/$Tfile | sed 's/D/E/g' > $Out.t
     cat $DatDir/$Vfile | sed 's/D/E/g' > $Out.v
 FLT=cat
@@ -41,6 +42,22 @@ FLT=cat
     rm -f $Out.t $Out.v 
 }
 
+IsoTList() {
+    local T="$1"
+    local Tfile=$2
+    local Vfile=$3
+    local Z_VTfile=$4
+    local DatDir=$5
+    local IDformat=$6
+    local Out=$7
+
+    for aa in $T ; do 
+        IsoT $aa $Tfile $Vfile $Z_VTfile $DatDir $IDformat $Out.$aa
+        awk '{print $1,$2}' $Out.$aa > $Out.2.$aa
+    done
+    set1grph $Out.2.* $Out /a || echo WAU
+    rm -rf  $Out.2.*
+}
 
 GetBnd() {
 Tfile=$1
@@ -147,3 +164,84 @@ EOF
 
 }
 
+
+
+
+
+IvlTable2Spl() {
+IvlDir=$1
+SplBase=${2:-$(basename $IvlDir)}
+NumEPnt=${3:-256}
+
+
+NumSplPnt=$(( $NumEPnt + 5 ))
+NumSplPnt=260
+#echo $NumEPnt $NumSplPnt $IvlDir $SplBase
+ReadSplineError=1e-5
+
+MakeSplineError=1e-2
+
+
+cat <<EOF >$SplBase.cfg
+
+ MakeCuSpline
+       TIvlTable2Spl {
+         ResSplFile  ${SplBase}.ispl
+         ResSplDescription  test spline
+         NumEPnt2NewSpl  ${NumEPnt}  Econverter2NewSpl  TExpConverter { MakeLog  1  MulX  1  AddX  0  }
+         P_RE_SaveFile P_RE_SaveFile  T_RE_SaveFile  T_RE_SaveFile  UsePT_RE_Files 0
+
+
+         Data_reader   
+         P_tv_data  XFile  $IvlDir/temper.in  YFile  $IvlDir/volume.in  ZFile  $IvlDir/pressu.tab
+         P_t_spl  TEncodedSplineGenerator {
+            FunctionConverterX..Z {
+               CvtX_0  TAutoExpConverter {  MakeLog  1  MulX  1  AddX  0  AutoMin_yesno 1 AutoVal  0.1  }
+               CvtY    TAutoExpConverter {  MakeLog  1  MulX  1  AddX  0  AutoMin_yesno 1 AutoVal  0.1  }
+            }
+            SplineGen  TSpline1DGenerator {
+               GenerationMisfit  $ReadSplineError  SplineName  p.ispl  SplineDescr  p_spline  NumX  $NumSplPnt  SplineOrder  3  MinXStep  0.1
+            }
+         }
+         E_tv_data  XFile  $IvlDir/temper.in  YFile  $IvlDir/volume.in  ZFile  $IvlDir/energy.tab
+         T_e_spl  TEncodedSplineGenerator {
+            FunctionConverterX..Z {
+               CvtX_0  TAutoExpConverter {  MakeLog  1  MulX  1  AddX  0  AutoMin_yesno 1 AutoVal  0.1  }
+               CvtY    TAutoExpConverter {  MakeLog  1  MulX  1  AddX  0  AutoMin_yesno 1 AutoVal  0.SplineGen  }
+            }
+            1  TSpline1DGenerator {
+               GenerationMisfit  $ReadSplineError  SplineName  t.ispl  SplineDescr  t_spline  NumX  $NumSplPnt  SplineOrder  3  MinXStep  0.01
+            }
+         }
+
+         Pspl_finGenerator  TEncodedSplineGenerator {
+            FunctionConverterX..Z {
+               CvtX_0  TAutoExpConverter {  MakeLog  1  MulX  1  AddX  0  AutoMin_yesno 1 AutoVal  1  }
+               CvtX_1  TAutoExpConverter {  MakeLog  1  MulX  1  AddX  0  AutoMin_yesno 1 AutoVal  1  }
+               CvtY    TAutoExpConverter {  MakeLog  1  MulX  1  AddX  0  AutoMin_yesno 1 AutoVal  1  }
+
+            }
+            SplineGen  TSpline2DGenerator {
+               GenerationMisfit  $MakeSplineError  SplineName  SingleFileStorage  SplineDescr  p_re_spline  NumX  $NumSplPnt  NumY  $NumSplPnt
+            }
+         }
+         Tspl_finGenerator  TEncodedSplineGenerator {
+            FunctionConverterX..Z {
+               CvtX_0  TAutoExpConverter {  MakeLog  1  MulX  1  AddX  0  AutoMin_yesno 1 AutoVal  1  }
+               CvtX_1  TAutoExpConverter {  MakeLog  1  MulX  1  AddX  0  AutoMin_yesno 1 AutoVal  1  }
+               CvtY    TAutoExpConverter {  MakeLog  1  MulX  1  AddX  0  AutoMin_yesno 1 AutoVal  1  }
+
+            }
+            SplineGen  TSpline2DGenerator {
+               GenerationMisfit  $MakeSplineError  SplineName  SingleFileStorage  SplineDescr  t_re_spline  NumX  $NumSplPnt  NumY  $NumSplPnt
+            }
+         }
+
+     }
+
+EOF
+
+ivl_cvt blackbox "ConfigFile $SplBase.cfg"
+
+
+}

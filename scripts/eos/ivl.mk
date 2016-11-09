@@ -16,7 +16,7 @@ RunCommand = bash -exvc ". $(ScriptDir)/$(MkPref).sh; $1"
 SVNROOT=http://pyal-nb-w7.ld.yandex.ru:8080
 MatterDir := $(BaseDir)/matters
 
-IVLDAT := /cygdrive/c/Pyal/Work/Ficp/arc/extra_data/ivl/pb
+IVLDAT ?= /cygdrive/c/Pyal/Work/Ficp/arc/extra_data/ivl/pb
 
 
 CheckCommand = @perl -e ' die("Have to define $$ARGV[0]\n")  if (!defined($$ARGV[1])); ' $1 $$$1
@@ -26,6 +26,16 @@ CheckCfg.dst :
 	#$(call CheckCommand,CFGFILE)
 	mkdir -p $(WorkDir) || echo wau
 
+
+
+ispl.dst: CheckCfg.dst
+	$(call CheckCommand,IVLDAT)
+	cd $(WorkDir);$(call RunCommand, IvlTable2Spl $(IVLDAT))
+
+
+
+
+
 # P(V,T)
 isot.dst : CheckCfg.dst
 	$(call CheckCommand,TEMP)
@@ -33,6 +43,16 @@ isot.dst : CheckCfg.dst
 	cd $(WorkDir);$(call RunCommand, IsoT $(TEMP) temper.in volume.in energy.tab $(IVLDAT) 0 isot.e.$(TEMP) )
 	cd $(WorkDir);$(call RunCommand, IsoT $(TEMP) temper.in volume.in physid.tab $(IVLDAT) 1 isot.id.$(TEMP) )
 
+isots.dst : CheckCfg.dst
+	$(call CheckCommand,TEMP)
+	echo IVLDAT $(IVLDAT)
+	sleep 10
+	cd $(WorkDir);$(call RunCommand, IsoTList \"$(TEMP)\" temper.in volume.in pressu.tab $(IVLDAT) 0 isot.ps )
+	cd $(WorkDir);$(call RunCommand, IsoTList \"$(TEMP)\" temper.in volume.in energy.tab $(IVLDAT) 0 isot.es )
+	cd $(WorkDir);$(call RunCommand, IsoTList \"$(TEMP)\" temper.in volume.in physid.tab $(IVLDAT) 1 isot.ids )
+
+
+# Builing 2 phase boundary
 bnd.dst : CheckCfg.dst
 	cd $(WorkDir);$(call RunCommand, GetBnd temper.in volume.in physid.tab $(IVLDAT) 4 5 0 bnd45 )
 	cd $(WorkDir);$(call RunCommand, GetBnd temper.in volume.in physid.tab $(IVLDAT) 3 4 1 bnd34 )
@@ -40,6 +60,7 @@ bnd.dst : CheckCfg.dst
 	cd $(WorkDir);$(call RunCommand, DecodeBnd temper.in volume.in pressu.tab $(IVLDAT) bnd34 bin.p.hgh)
 	cd $(WorkDir);$(call RunCommand, DecodeBnd temper.in volume.in energy.tab $(IVLDAT) bnd45 bin.e.low)
 
+# Builing 2 phase boundary spl
 spl.dst :CheckCfg.dst
 	cd $(WorkDir);rm -f spl.cfg;$(call RunCommand, MakeSplCfg $$(pwd)/bin.e.low 0 2 $$(pwd)/t2e_low.spl t2e_low 1e-5 spl.cfg )
 	cd $(WorkDir);$(call RunCommand, MakeSplCfg $$(pwd)/bin.e.low 0 1 $$(pwd)/t2r_low.spl t2r_low 1e-6 spl.cfg )

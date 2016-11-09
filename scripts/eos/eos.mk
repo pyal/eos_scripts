@@ -39,8 +39,8 @@ getscript.dst : getmatter.dst
 
 run.dst : CheckCfg.dst getscript.dst 
 	CfgDir=$$(cd $$(dirname $$CFGFILE);pwd) ;\
-		cd $(WorkDir);$(call RunCommand,SingleJob $$CfgDir/$(basename $$CFGFILE) matter_name.txt $$BASE $$RESULTDIR)
-		#cd $(WorkDir); perl $(ScriptDir)/$(MkPref).pl $(WorkDir) $$CfgDir/$(basename $$CFGFILE) matter_name.txt $$BASE $$RESULTDIR
+		cd $(WorkDir);$(call RunCommand,SingleJob $$CfgDir/$$(basename $$CFGFILE) matter_name.txt $$BASE $$RESULTDIR)
+		#cd $(WorkDir); perl $(ScriptDir)/$(MkPref).pl $(WorkDir) $$CfgDir/$$(basename $$CFGFILE) matter_name.txt $$BASE $$RESULTDIR
 
 multi.dst : CheckDescription.dst getscript.dst
 	CfgDir=$$(cd $$(dirname $$CFGFILE);pwd) ;\
@@ -50,7 +50,7 @@ dat.dst : CheckDescription.dst
 	$(call RunCommand,ShowDat $$CFGFILE)
 
 
-$(MkPref).files := scripts/eos/$(MkPref).mk scripts/eos/$(MkPref).pl scripts/eos/$(MkPref).cfg scripts/eos/$(MkPref).sh scripts/common/CfgReader.pm scripts/eos/EosMarch.pm
+$(MkPref).files := scripts/eos/$(MkPref).mk scripts/eos/$(MkPref).pl scripts/eos/$(MkPref).cfg scripts/eos/$(MkPref).sh scripts/common/CfgReader.pm scripts/eos/EosMarch.pm scripts/eos/ivl.mk scripts/eos/ivl.sh
 $(MkPref).files := $($(MkPref).files) scripts/common/mat.mk scripts/common/UrsCurve.pm
 
 updatescript.dst :
