@@ -45,3 +45,6 @@ LiFSpl     MatterSpl  { lif_cal.spl  }
 
 
 HeTestSpl   MatterFreeE { MatterFreeSpl { he.HeOCP.spl   } } 
+
+Mg   MatterABu  { Material_File material.cfg Substance Mg-Tern  }
+Brass  MatterABu  { Material_File material.cfg Substance Brass  }
