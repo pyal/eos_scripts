@@ -177,7 +177,7 @@ NumEPnt=${3:-256}
 NumSplPnt=$(( $NumEPnt + 5 ))
 NumSplPnt=260
 #echo $NumEPnt $NumSplPnt $IvlDir $SplBase
-ReadSplineError=1e-5
+ReadSplineError=1e-4
 
 MakeSplineError=1e-2
 
@@ -207,9 +207,9 @@ cat <<EOF >$SplBase.cfg
          T_e_spl  TEncodedSplineGenerator {
             FunctionConverterX..Z {
                CvtX_0  TAutoExpConverter {  MakeLog  1  MulX  1  AddX  0  AutoMin_yesno 1 AutoVal  0.1  }
-               CvtY    TAutoExpConverter {  MakeLog  1  MulX  1  AddX  0  AutoMin_yesno 1 AutoVal  0.SplineGen  }
+               CvtY    TAutoExpConverter {  MakeLog  1  MulX  1  AddX  0  AutoMin_yesno 1 AutoVal  0.1  }
             }
-            1  TSpline1DGenerator {
+            SplineGen  TSpline1DGenerator {
                GenerationMisfit  $ReadSplineError  SplineName  t.ispl  SplineDescr  t_spline  NumX  $NumSplPnt  SplineOrder  3  MinXStep  0.01
             }
          }

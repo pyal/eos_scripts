@@ -58,7 +58,6 @@ sub readConfig {
     }
     
     my @result;
-    print("parsing @l\n");
     do {
         my (%params, %single);
         my $posScript = "cat";
@@ -71,7 +70,6 @@ sub readConfig {
             shift(@l);
         }
         for(my $i = 0;$i < int(@l); $i+=2) {
-            print ("$i\n");
             $params{$l[$i]} = $l[$i + 1];
         }
         @l = @{getNext($inp)};
@@ -84,6 +82,7 @@ sub readConfig {
         $single{Params} = \%params;
         $single{PostTask} = $posScript;
         $result[int(@result)] = \%single;
+        print("next @l\n");
     } while(int(@l)!=0 && ($l[0] eq "Curve" || $l[0] eq "Name" ));
     #} while(int(@l)!=0 && $l[0] eq "Curve");
     return (\@result, $inputDataFile);
@@ -162,7 +161,7 @@ my ($workDir, $cfgFile, $matterName, $resultDirName) = @ARGV;
 my $baseCfg = "explicit";
 
 my ($todoList, $inputDataFile) = readConfig($cfgFile);
-#print STDERR "ReadConfig done [ $inputDataFile ] \n", Dumper($todoList), "\n";
+#print "ReadConfig done [ $inputDataFile ] \n", Dumper($todoList), "\n";
 if (!defined($inputDataFile)) {
     my $taskNum = OutputSingleTaskList($todoList, $workDir, $cfgFile, $baseCfg, $matterName);
     ExperimentTheorySum($taskNum, $cfgFile, $todoList);

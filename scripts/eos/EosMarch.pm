@@ -212,8 +212,8 @@ sub P_RT_Caloric($) {
 URS_Curve {
     Variables {
         Matter  EOS_Savable { $matter }
-        Dencity UrsCurve_StepClc { MinVal $Cfg->{Cfg}{R}{MinVal} MaxVal $Cfg->{Cfg}{R}{MaxVal} NumDivStp $Cfg->{Cfg}{R}{NumDivStp} LogScale $Cfg->{Cfg}{R}{LogScale} NumSame 1 Centered 0 }
-        Temperature  UrsCurve_StepClc { MinVal $Cfg->{Cfg}{T}{MinVal} MaxVal $Cfg->{Cfg}{T}{MaxVal} NumDivStp $Cfg->{Cfg}{T}{NumDivStp} LogScale $Cfg->{Cfg}{T}{LogScale} NumSame 1 Centered 0 }
+        Dencity UrsCurve_StepClc { MinVal $Cfg->{Cfg}{R}{MinVal} MaxVal $Cfg->{Cfg}{R}{MaxVal} NumDivStp $Cfg->{Cfg}{R}{NumDivStp} LogScale $Cfg->{Cfg}{R}{LogScale} NumSame $Cfg->{Cfg}{R}{NumSamePnt}  Centered 0 }
+        Temperature  UrsCurve_StepClc { MinVal $Cfg->{Cfg}{T}{MinVal} MaxVal $Cfg->{Cfg}{T}{MaxVal} NumDivStp $Cfg->{Cfg}{T}{NumDivStp} LogScale $Cfg->{Cfg}{T}{LogScale} NumSame $Cfg->{Cfg}{T}{NumSamePnt}  Centered 0 }
 
         UrsE            UrsCurve_EOS_FindE { NameDenc Dencity NameTemp Temperature  NameMatter Matter }
         EOS             UrsCurve_Caloric  {   NameDenc Dencity NameEnergy UrsE.Energy  NameMatter Matter }

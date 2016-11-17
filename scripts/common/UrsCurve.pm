@@ -17,11 +17,12 @@ sub RebuildBnd($$) {
     my ($Cfg, $names) = @_;
     my @names = split(":", $names);
     foreach my $n (split(":", $names)) {
-        my ($min, $max, $num, $logS) = split(":", $Cfg->{$n});
+        my ($min, $max, $num, $logS, $numSame) = split(":", $Cfg->{$n});
         $max = $min if (!defined($max));
         $num = 1 if (!defined($num));
         $logS = 0 if (!defined($logS));
-        $Cfg->{$n} = {"MinVal" => $min, "MaxVal" => $max, "NumDivStp" => $num,  "LogScale" => $logS};
+        $numSame = 1 if (!defined($numSame));
+        $Cfg->{$n} = {"MinVal" => $min, "MaxVal" => $max, "NumDivStp" => $num,  "LogScale" => $logS, "NumSamePnt" => $numSame};
     }
 }
 

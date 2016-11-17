@@ -28,6 +28,7 @@ Saturn  MatterSpl  { saturnf.spl  }
 SteelSplBad  MatterSpl  { steel.spl  }  
 FeSpl MatterSpl  { fe_liqgas.spl  }  
 CuSpl MatterSpl  { cu_liqgas.spl  }  
+LiFSpl     MatterSpl  { lif_cal.spl  }  
 
 HeIon      MatterSpl  { he_spl_ionOCP.spl  }  ; FreeEIdeal  { Material_File material.cfg Substance  FreeEIdealHe  }
 HeExt   MatterSpl  { he_ros_ide.spl  }  ;   FreeEIdeal { Material_File material.cfg Substance FreeEIdealHe }
@@ -39,9 +40,10 @@ Vacuum   MatterVacuum {  }
 Hexogen  MatterSum { Pres_Denc  1  Pressure1_2  0.5  Substances  MatterMurnaganBerch   { Material_File material.cfg Substance MurnaganGeks }  MatterZubarev   {  Material_File material.cfg Substance ZubarevGeks } } State
 
 PbSpl      TMatterSpl  { pb998.ispl  }  
-Pb1Spl      TMatterSpl  { pb256.ispl  }  
+Pb1Spl     TMatterSpl  { pb256.ispl  }  
 CuSpl      TMatterSpl  { cu256.ispl  }  
-LiFSpl     MatterSpl  { lif_cal.spl  }  
+BrasSpl    TMatterSpl  { bras.ispl  }  
+
 
 
 HeTestSpl   MatterFreeE { MatterFreeSpl { he.HeOCP.spl   } } 
