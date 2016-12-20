@@ -1,5 +1,5 @@
   test spline minD 1 maxD 20 minT -20892.9 maxT 185071 minE 1 maxE 87.4982  
-  DencCold  1  DencMax  20 
+  DencCold  8.48  DencMax  20 
   SoundStep  1e-005  E2FTmin  0  E2FTmax  100  E2FTzero  5  E2FTeps  1e-008 
   E2FT_Converter  TExpConverter { 
     MakeLog  1  MulX  1  AddX  150 
