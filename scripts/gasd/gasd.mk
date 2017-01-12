@@ -33,19 +33,22 @@ getscript.dst : CheckCfg.dst getmatter.dst
 	cp $$CFGFILE $(WorkDir) || echo wau
 	#$(markstep)
 
+# Std run cell_kru
 run.dst : getscript.dst CheckCfg.dst
 	cd $(WorkDir);for aa in ClcAssembly GetAllPnt SumFiles ; do \
 		perl $(ScriptDir)/$(MkPref).pl $(WorkDir) $$CFGFILE $(WorkDir)/matter_name.txt $$BASE $$aa 1e8;\
 		done
 
-run1.dst : getscript.dst CheckCfg.dst
-	cd $(WorkDir);for aa in ClcAssemblyNew GetAllPnt SumFiles ; do \
-		perl $(ScriptDir)/$(MkPref).pl $(WorkDir) $$CFGFILE $(WorkDir)/matter_name.txt $$BASE $$aa 1e3;\
-		done
-
+# Show results only
 bug.dst :  CheckCfg.dst
 	cd $(WorkDir);for aa in GetAllPnt SumFiles ; do \
 		perl $(ScriptDir)/$(MkPref).pl $(WorkDir) $$CFGFILE $(WorkDir)/matter_name.txt $$BASE $$aa 1e8;\
+		done
+
+#Wilkins
+wilkins.dst : getscript.dst CheckCfg.dst
+	cd $(WorkDir);for aa in ClcAssemblyWilkins GetAllPnt SumFiles ; do \
+		perl $(ScriptDir)/$(MkPref).pl $(WorkDir) $$CFGFILE $(WorkDir)/matter_name.txt $$BASE $$aa 1e3;\
 		done
 
 $(MkPref).files := scripts/gasd/$(MkPref).mk scripts/gasd/$(MkPref).pl scripts/gasd/$(MkPref).cfg scripts/gasd/GasdCfgReader.pm

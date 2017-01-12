@@ -6,7 +6,7 @@ require ClcGasd;
 require GasdCfgReader;
 #require AnalyzeData;
 #use IO::File;
-require RegMarch;
+#require RegMarch;
 
 ############################################################################
 sub ClcEksp     #10/21/2007 5:51

@@ -14,32 +14,32 @@ sub new     #01.09.2005 13:04
 }   ##new
 
 ############################################################################
-sub ClcAssembly		#09/19/2007 11:07
+sub ClcAssemblyConfig       #09/19/2007 11:07
 ############################################################################
  {
-	my ($Par) = @_;
+    my ($Par) = @_;
 
-	my @ClcLayer = @{$Par->{ClcLayer}};
-	my $ClcTime = $Par->{ClcTime};
-	my $EnergyInput = $ClcTime->{EnergyInput};
+    my @ClcLayer = @{$Par->{ClcLayer}};
+    my $ClcTime = $Par->{ClcTime};
+    my $EnergyInput = $ClcTime->{EnergyInput};
     $EnergyInput =~ s/:/ /g;
-	my @Bnd;
-	$Bnd[0] = 0;
-	my $Matter_Boundaries="";
-	my $Matters="";
-	my $Parameters="";
-	for(my $it=0;$it<int(@ClcLayer);$it++){
+    my @Bnd;
+    $Bnd[0] = 0;
+    my $Matter_Boundaries="";
+    my $Matters="";
+    my $Parameters="";
+    for(my $it=0;$it<int(@ClcLayer);$it++){
 PrintHash($ClcLayer[$it]);
-		$Bnd[$it+1] = $Bnd[$it] + $ClcLayer[$it]{N};
-		$Matter_Boundaries = $Matter_Boundaries."  ".$Bnd[$it+1]	if ($it!=int(@ClcLayer)-1);
-		$Matters = $Matters."\n"				if ($it>0);
-		$Matters = $Matters.$ClcLayer[$it]{M};
-		my $t = $it+1;
-		$Parameters = $Parameters." P[$t]   $ClcLayer[$it]{P}  D[$t] $ClcLayer[$it]{D}     E[$t]  $ClcLayer[$it]{E}    V[$t]  $ClcLayer[$it]{V} Length[$t] $ClcLayer[$it]{L}\n";
-	}
-	my ($TimeStp, $TimeWrite, $EndTime) = ( $ClcTime->{TimeStp}/$Par->{TimeCoef}, $ClcTime->{TimeWrite}/$Par->{TimeCoef}, $ClcTime->{EndTime}/$Par->{TimeCoef} );
+        $Bnd[$it+1] = $Bnd[$it] + $ClcLayer[$it]{N};
+        $Matter_Boundaries = $Matter_Boundaries."  ".$Bnd[$it+1]    if ($it!=int(@ClcLayer)-1);
+        $Matters = $Matters."\n"                if ($it>0);
+        $Matters = $Matters.$ClcLayer[$it]{M};
+        my $t = $it+1;
+        $Parameters = $Parameters." P[$t]   $ClcLayer[$it]{P}  D[$t] $ClcLayer[$it]{D}     E[$t]  $ClcLayer[$it]{E}    V[$t]  $ClcLayer[$it]{V} Length[$t] $ClcLayer[$it]{L}\n";
+    }
+    my ($TimeStp, $TimeWrite, $EndTime) = ( $ClcTime->{TimeStp}/$Par->{TimeCoef}, $ClcTime->{TimeWrite}/$Par->{TimeCoef}, $ClcTime->{EndTime}/$Par->{TimeCoef} );
         open(OUT,">$Par->{ClcName}")            or die "Could not open file $Par->{ClcName}:$!\n";
-	print OUT <<EOF
+    print OUT <<EOF
 BegTime 0 TimeStp $TimeStp TimeWrite $TimeWrite PresDerivCoef 0.7 EndTime $EndTime $EnergyInput
 NumPnt   $Bnd[$#Bnd]  LftPnt   0  RgtPnt   1  NumIntPar $ClcTime->{NumIntPar}
 LftBnd_Free 1 RgtBnd_Free 1 TimeStability $ClcTime->{TimeStability}
@@ -50,10 +50,28 @@ bad
 Parameters
 $Parameters
 EOF
-	;close(OUT);
-	system("cell_dat.exe $Par->{ClcName} $Par->{ClcName}.ck /l ");
-	system("cell_kru.exe $Par->{ClcName}.ck $Par->{ClcName}.dat ");
-}	##ClcAssembly
+}   ##ClcAssemblyConfig
+
+############################################################################
+sub ClcAssembly       #09/19/2007 11:07
+############################################################################
+ {
+    my ($Par) = @_;
+    ClcAssemblyConfig($Par);
+
+    system("cell_dat.exe $Par->{ClcName} $Par->{ClcName}.ck /l ");
+    system("cell_kru.exe $Par->{ClcName}.ck $Par->{ClcName}.dat ");
+}   ##ClcAssembly
+
+############################################################################
+sub ClcAssemblyWilkins       #09/19/2007 11:07
+############################################################################
+ {
+    my ($Par) = @_;
+    ClcAssemblyConfig($Par);
+    system("poly_test config Topology $Par->{ClcName}  Config $Par->{ClcName}.wil");
+    system("poly_test march Config $Par->{ClcName}.wil ");
+}   ##ClcAssemblyWilkins
 
 
 ############################################################################
@@ -446,7 +464,7 @@ EOF
 
 
 #my $Par = PackParams("isent", $ShowE, $ShowT, $ClcLayer, $ClcTime);
-#ClcAssembly($Par);
+#ClcAssemblyConfig($Par);
 #GetAllPnt($Par);
 
 
