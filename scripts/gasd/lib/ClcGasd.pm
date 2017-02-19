@@ -64,15 +64,33 @@ sub ClcAssembly       #09/19/2007 11:07
 }   ##ClcAssembly
 
 ############################################################################
-sub ClcAssemblyWilkins       #09/19/2007 11:07
+sub ClcAssemblyPolyTest       #09/19/2007 11:07
 ############################################################################
  {
-    my ($Par) = @_;
+    my ($Par, $marcher) = @_;
     ClcAssemblyConfig($Par);
-    system("poly_test config Topology $Par->{ClcName}  Config $Par->{ClcName}.wil");
+    print "Executing:\npoly_test config Topology $Par->{ClcName}  Config $Par->{ClcName}.wil\n";
+    system("poly_test config Topology $Par->{ClcName}  Config $Par->{ClcName}.wil $marcher");
+    print "Executing:\npoly_test march Config $Par->{ClcName}.wil\n";
     system("poly_test march Config $Par->{ClcName}.wil ");
 }   ##ClcAssemblyWilkins
 
+############################################################################
+sub ClcAssemblyWilkins       #09/19/2007 11:07
+############################################################################
+ {
+    my ($Par, $marcher) = @_;
+    ClcAssemblyPolyTest($Par, "Marcher Wilkins");
+}   ##ClcAssemblyWilkins
+
+
+############################################################################
+sub ClcAssemblyIntegral       #09/19/2007 11:07
+############################################################################
+ {
+    my ($Par) = @_;
+    ClcAssemblyPolyTest($Par, "Marcher Integral");
+}   ##ClcAssemblyIntegral
 
 ############################################################################
 sub GetPntE		#09/19/2007 11:11
