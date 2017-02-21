@@ -1,0 +1,8 @@
+    EggertData us up   data (precompressed liquid he) init dense = 3.5 ; 2.3 ; 1.8 ; 1.5 ; 1
+
+
+    Name hug_0809 Curve HugPres Mat H2dismet P 1e-4:800:200:1 StartR 0.0809 StartE 0.1  Out R:P 
+    Name hug_071  Curve HugPres Mat H2dismet P 1e-4:800:200:1 StartR 0.071 StartE 0.1  Out R:P 
+    Name t-077     Curve P_RT_Caloric   Mat H2dismet R 1e-5:1.5:288:1 T 77     Out R:P 
+    Name t-3       Curve P_RT_Caloric   Mat H2dismet R 1e-5:1.5:288:1 T 3000   Out R:P 
+    Name t-10      Curve P_RT_Caloric   Mat H2dismet R 1e-5:1.5:288:1 T 10000  Out R:P 
