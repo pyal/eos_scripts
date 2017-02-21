@@ -107,11 +107,6 @@ sub OutputSingleTaskList($$$$$) {
 }
 
 use File::Basename;
-sub b($) {
-    my ($name) = @_;
-    print $name, " ", basename($name), "\n";
-    return basename($name);
-}
 sub ExperimentTheorySum($$$) {
     my ($taskNum, $cfgFile, $todoList) = @_;
     return if ($taskNum == 0);

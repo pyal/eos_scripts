@@ -74,7 +74,7 @@ showexp.dst:
 $(MkPref).files := scripts/eos/$(MkPref).mk scripts/eos/$(MkPref).pl scripts/eos/$(MkPref).cfg scripts/eos/$(MkPref).sh 
 $(MkPref).files := $($(MkPref).files) scripts/common/CfgReader.pm scripts/eos/EosMarch.pm scripts/eos/ivl.mk scripts/eos/ivl.sh 
 $(MkPref).files := $($(MkPref).files) scripts/eos/exp_yaml.py scripts/eos/eos.model.yaml scripts/eos/eos.exp.yaml scripts/eos/h2.model.yaml scripts/eos/h2.depricated.yaml
-
+$(MkPref).files := $($(MkPref).files) scripts/eos/usefull/eos.h2 scripts/eos/usefull/eos.d2 scripts/eos/usefull/eos.cfg scripts/eos/usefull/test
 $(MkPref).files := $($(MkPref).files) scripts/common/mat.mk scripts/common/UrsCurve.pm
 
 updatescript.dst :
