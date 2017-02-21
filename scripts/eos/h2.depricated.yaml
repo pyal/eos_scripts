@@ -1,0 +1,90 @@
+
+# // FreeEElectron
+# H2Electron  NumEl  1 MolVeight 1 Zero 0 HiT  0
+
+
+H2Electron:
+    Config: H2Electron  NumEl  1 MolVeight 1 Zero 0 HiT  0
+    EOS: FreeEElectron
+    Descr: Pure electron component FreeE
+           EOS of gas of electrons in solid body under low temper compared to temper of Fermi. 
+           Depricated - use FreeEElectronStrict instead
+
+# IdealH   CvId 1.5 NMol 1 Zero 0 HiT -0.69315  Tvib 0 Trot 0
+# IdealHMet    CvId 1.5 NMol 1 Zero 0 HiT -0.  Tvib 0 Trot 0
+
+IdealH:
+    Config: CvId 1.5 NMol 1 Zero 0 HiT -0.69315  Tvib 0 Trot 0
+    EOS: FreeEIdeal
+    Descr: H FreeE ; temperature corrections
+           Looks like an old, with manual HiT fixed now
+
+IdealHMet:
+    Config: CvId 1.5 NMol 1 Zero 0 HiT -0.  Tvib 0 Trot 0
+    EOS: FreeEIdeal
+    Descr: Pure H FreeE ; no corrections
+
+
+# // FreeEElectronStrict
+# //HElectronBolt                NumElPerAtom 1   MolVeight 1   Gfactor 2  ElMass_ElseNuclear  1 OutBoltzman 1  ColdCurve 0  ColdCurveTempCor 0
+# //HElectronZeroCor                NumElPerAtom 1   MolVeight 1   Gfactor 2  ElMass_ElseNuclear  1 OutBoltzman 0   ColdCurve 0  ColdCurveTempCor 1
+
+# IdealHMetTrans   CvId 1.5 NMol 1 Zero 60 HiT -0  Tvib 0 Trot 0
+# //Was for some reason? Error? HiT -0.69315  ? No... Looks yes, OK.
+# IdealHMetTrans CvId 1.5 NMol 1 Zero 2 HiT  -0.69315    Tvib 0 Trot 0
+
+# //FreeEDis
+#  Mol_Atom_Old
+#     EnterMinimClass DisFindMinimE {
+#        MinimizeVolumes  1  MinimRelatNum  Dis_RelatNum_MinimFunc_SingleH2 { }
+#     }
+#     EnterList_SubsName_FreeESubstance_SubsMolVeight {
+#        Name Mol MolVeight 2 StartProportion 1 RelatVolumeCoef 2 SubstMixtures 1 MatterFreeE FreeESumMatter {  FileName  mat.bad Substance MatterSumH2Mol    } ;
+#        Name Atom MolVeight 1 StartProportion 0 RelatVolumeCoef 1 SubstMixtures 1 MatterFreeE FreeESumMatter {  FileName  mat.bad Substance MatterSumH2Atom  } ;
+#     }
+#     EnterListOfVectors_Vector_SubsName_SubsCoef {  {   Mol -1      Atom 2     } }
+
+#  Mol_Atom_Gen_Old
+#     EnterMinimClass DisFindMinimE {
+#        MinimizeVolumes  1  MinimRelatNum  Dis_RelatNum_MinimFunc_Single { }
+#     }
+#     EnterList_SubsName_FreeESubstance_SubsMolVeight {
+#        Name Mol MolVeight 2 StartProportion 1 RelatVolumeCoef 2 SubstMixtures 1 MatterFreeE FreeESumMatter {  FileName  mat.bad Substance MatterSumH2Mol    } ;
+#        Name Atom MolVeight 1 StartProportion 0 RelatVolumeCoef 1 SubstMixtures 1 MatterFreeE FreeESumMatter {  FileName  mat.bad Substance MatterSumH2Atom  } ;
+#     }
+#     EnterListOfVectors_Vector_SubsName_SubsCoef {  {   Mol -1      Atom 2     } }
+
+
+
+// Test only...
+// FreeESumMatter
+MatterSumH2MolStrict  {
+    Coef1   1
+    Matter1   FreeEPureRoss  {  Material_File matter_sum.cfg   Substance H2Mod_Mol  }
+    Coef2   1
+    Matter2   FreeEIdeal   {  Material_File mat.bad Substance IdealHMol  }
+}
+MatterSumH2MetStrict  {
+    Coef1   1
+    Matter1   FreeEPureRoss  {  Material_File matter_sum.cfg   Substance H2Mod_Met  }
+    Coef2   -1
+    Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronZero                }
+    Coef2   1
+    Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronS }
+    Coef3   1
+    Matter3   FreeEIdeal     { Material_File mat.bad Substance IdealHMet    }
+}
+MatterSumH2MetCorStrict  {
+    Coef1   1
+    Matter1   FreeEPureRoss  {  Material_File matter_sum.cfg   Substance H2Mod_Met  }
+    Coef2   -1
+    Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronZero                }
+    Coef2   1
+    Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronS }
+    Coef3   1
+    Matter3   FreeEIdeal     { Material_File mat.bad Substance IdealHMetTrans   }
+    Coef4   1
+    Matter4   FreeEFormula   { Material_File mat.bad Substance FormMetCorr  }
+
+}
+

@@ -1,0 +1,35 @@
+
+Fe:
+  EOS: MatterStable { TwoPhaseBndFile  fe_strt.unst.bin  UnstableMatter  MatterFreeE { FreeEBushman  { Material_File material.cfg   Substance fe_var_BushmanLiquid }  } }  
+  EOS.Desc: Experiment
+
+H2dismet:
+  EOS: MatterSpl  { h2_dis_met_sarov.spl  }
+  LOW: FreeESumMatter   {  Material_File material.cfg Substance  MatterSumH2MolS   }
+  Usage: State of the art
+  EOS.Desc: mol-atom (metal - dielectric) optimized for sarov data
+  LOW.Desc: Ross + D2 ideal
+
+H2f:
+  EOS: MatterSpl  { h2_mol_atom.spl  }  
+  LOW: FreeEIdeal  { Material_File material.cfg Substance  FreeEIdealH2  }
+  Usage: For low temp?  Close to h2_claster9
+  EOS.Desc: Simple mol-atom (metal - dielectric) transition
+  LOW.Desc: H2 ideal (no ross)
+
+H2:
+  EOS: MatterSpl  { h2_claster9.spl  }
+  LOW: FreeESumMatter   {  Material_File material.cfg Substance  MatterSumH2MolS   }
+  Usage: Close to H2dismet
+  EOS.Desc: mol-atom (metal - dielectric) transition in cluster size = 9 model
+  LOW.Desc: Ross + D2 ideal
+
+D2:
+  EOS: MatterFreeE { MatterFreeSpl { d2claster_f.spl } }
+  LOW: FreeESumMatter   {  Material_File material.cfg Substance  MatterSumD2MolS   }
+  Usage: State of the art
+  EOS.Desc: 
+  LOW.Desc: Ross + D2 ideal
+
+
+

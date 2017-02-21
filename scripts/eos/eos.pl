@@ -105,6 +105,13 @@ sub OutputSingleTaskList($$$$$) {
     }
     return $taskNum;
 }
+
+use File::Basename;
+sub b($) {
+    my ($name) = @_;
+    print $name, " ", basename($name), "\n";
+    return basename($name);
+}
 sub ExperimentTheorySum($$$) {
     my ($taskNum, $cfgFile, $todoList) = @_;
     return if ($taskNum == 0);
@@ -112,12 +119,18 @@ sub ExperimentTheorySum($$$) {
     system("rm -f $cfgFile.sum");
     my $numExp = 0;
     my @goodExp = ();
+    my $column_names = "";
+    my $file_names = "";
+
     for( my $i = 0; $i < $taskNum; $i++) {
         my $f = $i + 2;
         my $numPnt = `cat $cfgFile | grep '	' | cut -f1,$f | awk 'NF==2' | wc -l`;
         $goodExp[$i] = 0;
         $numExp++, $goodExp[$i] = 1  if ($numPnt > 0);
+        $column_names = "$column_names, ".basename("$cfgFile\.$todoList->[$i]{Name}");
+        $file_names = "$file_names "."$cfgFile\.$todoList->[$i]{Name}";
     }
+    system("echo X $column_names > $cfgFile.sum");
     my $pref = "";
     for( my $i = 0; $i < $taskNum; $i++) {
         my $f = $i + 2;
@@ -130,6 +143,7 @@ sub ExperimentTheorySum($$$) {
         print STDERR "$pref $post $goodExp[$i]\n";
         system("cat $cfgFile\.$todoList->[$i]{Name} | awk -v pr=$pref -v po=$post '{print \$1,pr,\$2.po}' >> $cfgFile.sum");
     }
+    system("rm $file_names");
     
 }
 sub Convert($$) {
@@ -161,7 +175,7 @@ my ($workDir, $cfgFile, $matterName, $resultDirName) = @ARGV;
 my $baseCfg = "explicit";
 
 my ($todoList, $inputDataFile) = readConfig($cfgFile);
-#print "ReadConfig done [ $inputDataFile ] \n", Dumper($todoList), "\n";
+print "ReadConfig done [ $inputDataFile ] \n", Dumper($todoList), "\n";
 if (!defined($inputDataFile)) {
     my $taskNum = OutputSingleTaskList($todoList, $workDir, $cfgFile, $baseCfg, $matterName);
     ExperimentTheorySum($taskNum, $cfgFile, $todoList);

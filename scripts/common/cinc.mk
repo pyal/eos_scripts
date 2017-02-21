@@ -8,7 +8,10 @@ MkName := $(shell basename $(mkscript))
 UserName := $(shell whoami)
 markstep = touch $(notdir $@)
 
-RunCommand = bash -exvc -o igncr ". $(ScriptDir)/$(MkPref).sh; $1"
+# cygwin only
+#RunCommand = bash -exvc -o igncr ". $(ScriptDir)/$(MkPref).sh; $1"
+# mac
+RunCommand = bash -exvc ". $(ScriptDir)/$(MkPref).sh; $1"
 CheckCommand = @perl -e ' die("Have to define $$ARGV[0]\n")  if (!defined($$ARGV[1])); ' $1 $$$1 
 
 ShowDiff = cd $1;git diff

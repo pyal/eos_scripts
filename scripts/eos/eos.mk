@@ -12,6 +12,11 @@ BaseDir   := $(shell cd $(ScriptDir);cd ..;pwd)
 WorkDir   := $(ScriptDir)/run
 MatterDir := $(BaseDir)/matters
 
+VENV := $(shell cd ~;pwd)/work/venv
+PYTHON := $(VENV)/bin/python
+EXPYAML := $(shell echo $${EXPYAML:-$(ScriptDir)/eos.exp.yaml})
+EXPCOL := $(shell echo $${EXPCOL:-"''"})
+
 ifeq ($(shell [ -s $(ScriptDir)/cinc.mk ] && echo ok),ok)
 include $(ScriptDir)/cinc.mk
 else
@@ -49,8 +54,27 @@ multi.dst : CheckDescription.dst getscript.dst
 dat.dst : CheckDescription.dst
 	$(call RunCommand,ShowDat $$CFGFILE)
 
+buildvenv.dst:
+	#brew install python # to get pip
+	#pip install virtualenv
+	virtualenv $(VENV)
+	$(VENV)/bin/pip install PyYAML
 
-$(MkPref).files := scripts/eos/$(MkPref).mk scripts/eos/$(MkPref).pl scripts/eos/$(MkPref).cfg scripts/eos/$(MkPref).sh scripts/common/CfgReader.pm scripts/eos/EosMarch.pm scripts/eos/ivl.mk scripts/eos/ivl.sh
+getexp.dst:
+	$(call CheckCommand,EXPNAME)
+	$(PYTHON) $(ScriptDir)/exp_yaml.py $(EXPYAML)  $(EXPNAME)  "$(EXPCOL)" exp.$(EXPNAME)
+
+getexpc.dst:
+	$(call CheckCommand,EXPNAME)
+	$(PYTHON) $(ScriptDir)/exp_yaml.py $(EXPYAML)  $(EXPNAME)  "$(EXPCOL)" /dev/stdout | sed 's| |,|g' > expc.$(EXPNAME)
+
+showexp.dst:
+	$(PYTHON) $(ScriptDir)/exp_yaml.py -s $(EXPYAML) "fake"  "fake" "fake"
+
+$(MkPref).files := scripts/eos/$(MkPref).mk scripts/eos/$(MkPref).pl scripts/eos/$(MkPref).cfg scripts/eos/$(MkPref).sh 
+$(MkPref).files := $($(MkPref).files) scripts/common/CfgReader.pm scripts/eos/EosMarch.pm scripts/eos/ivl.mk scripts/eos/ivl.sh 
+$(MkPref).files := $($(MkPref).files) scripts/eos/exp_yaml.py scripts/eos/eos.model.yaml scripts/eos/eos.exp.yaml scripts/eos/h2.model.yaml scripts/eos/h2.depricated.yaml
+
 $(MkPref).files := $($(MkPref).files) scripts/common/mat.mk scripts/common/UrsCurve.pm
 
 updatescript.dst :

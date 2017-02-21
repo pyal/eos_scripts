@@ -1,4 +1,6 @@
-#!/bin/bash -exv -o igncr
+#!/bin/bash -exv
+
+##!/bin/bash -exv -o igncr
 
 WORKDIR=$(pwd)
 
@@ -37,6 +39,7 @@ MultiJob() {
   perl $DIR/eos.pl $WORKDIR $CFGFILE $MATTERNAME $RESULTDIR 2>stderr
     
 }
+
 ShowDat() {
   local CFGFILE=$1
   cat $CFGFILE | grep '	' | sed 's|	|,|g' > $CFGFILE.sep
@@ -46,4 +49,16 @@ ShowDat() {
   export LINESTYLE=" with linespoints "
   data.sh $CFGFILE.fsep - || true && true
   rm -f $CFGFILE.{fsep,sep}
+}
+
+DatSh() {
+  if [[ "x$2" == "x" ]] ; then 
+    if [[ "x$DELIM" == "x" ]] ; then 
+      qtshow show file "$1"  
+    else
+      qtshow show file "$1" FieldDelim $DELIM
+    fi
+  else
+    qtshow show file "$1"  gasd 1 CurTimeFirst $2
+  fi
 }

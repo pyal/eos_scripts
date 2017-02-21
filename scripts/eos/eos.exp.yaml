@@ -1,0 +1,122 @@
+H2_isent_grig1975:
+   Description: Grig1975 Hug Isoentrope compression
+   Names: "R0 R P"
+   Data: 
+    - [ 0.089, 0.45, 37 ]
+    - [ 0.089, 0.98, 263 ]
+    - [ 0.089, 1.15, 324 ]
+    - [ 0.089, 1.4, 440 ]
+    - [ 0.089, 1.96, 800 ]
+
+
+H2_hug_trunin2005:
+   Description: Trunin Paper Ro0 = 0.071
+   Names: "R P"
+   Data: 
+    - [ 0.151490, 1.39277 ]
+    - [ 0.155706, 1.84437 ]
+    - [ 0.170033, 2.85633 ]
+    - [ 0.178051, 4.32888 ]
+    - [ 0.181415, 3.98461 ]
+    - [ 0.206281, 6.01177 ]
+    - [ 0.216418, 8.73430 ]
+    - [ 0.226961, 10.2047 ]
+    - [ 0.240900, 13.9482 ]
+    - [ 0.280623, 26.3184 ]
+    - [ 0.299061, 54.7524 ]
+
+D2_hugall_trunin2005:
+   Description: Trunin Paper Ro0=0.171
+   Names: "R P"
+   Data: 
+      - [ 0.538065, 15.5023 ]
+      - [ 0.571877, 20.2237 ]
+      - [ 0.62046, 22.2593 ]
+      - [ 0.670404, 24.9253 ]
+      - [ 0.710943, 29.0138 ]
+      - [ 0.744765, 34.2084 ]
+      - [ 0.744765, 34.2084 ]
+      - [ 0.762426, 40.1967 ]
+      - [ 0.766608, 46.3468 ]
+      - [ 0.754626, 53.1328 ]
+      - [ 0.754804, 61.0192 ]
+      - [ 0.748272, 70.3271 ]
+      - [ 0.734999, 79.6372 ]
+      - [ 0.731203, 90.6794 ]
+      - [ 0.734129, 100.931 ]
+
+
+D2_hugorig_trunin2005:
+   Description: Trunin Paper
+   Names: "R0 R P U D"
+   Data: 
+      - [ 0.171, 0.608, 28.5,  10.95,  15.23 ]
+      - [ 0.171, 0.697, 53.6,  15.38,  20.38 ]
+      - [ 0.199, 0.749, 61.4,  15.06,  20.51 ]
+      - [ 0.171, 0.724, 108.8, 22.05,  28.87 ]
+      - [ 0.199, 0.808, 123.0, 21.59,  28.64 ]
+
+H2_hug_rusbank:
+   Description:  liquid hydrogen compression
+   References:
+      - S. P. Marsh (Ed.), LASL Shock Hugoniot Data, (Univ. California Press, Berkeley, 1980)
+   Remarks:
+      - R0 = 0.072 / m
+   Names: "m U D P R/R0 R Rem Ref"
+   Data: 
+      - [ 1, 3.490, 6.600, 1.659, 2.122, 0.1528, 1, 1 ]
+      - [ 1, 5.250, 9.090, 3.436, 2.367, 0.1704, 1, 1 ]
+      - [ 1, 6.340, 10.570, 4.825, 2.499, 0.1799, 1, 1 ]
+      - [ 1, 7.670, 11.800, 6.517, 2.857, 0.2057, 1, 1 ]
+
+
+D2_hug_rusbank:
+   Description:  liquid deuterium compression
+   References:
+      - S. P. Marsh (Ed.), LASL Shock Hugoniot Data, (Univ. California Press, Berkeley, 1980)
+      - L. B. Da Silva, P. Celliers, G. W. Collins, K. S. Budil, N. C. Holmes, T. W. Barbee Jr., 
+        B. A. Hammel, J. D. Kilkenny, R. J. Wallace, M. Ross, R. Cauble, 
+        Absolute Equation of State Measurements on Shocked Liquid Deuterium up to 200 GPa (2 Mbar), 
+        Phys. Rev. Lett. 78(3), 483-485(1997)
+      - M. D. Knudson, D. L. Hanson, J. E. Bailey, C. A. Hall, J. R. Assay, C. Deeney, 
+        Principal Hugoniot, reverberating wave, and mechanical reshock measurements of liquid deuterium 
+        to 400 GPa using plate impact techniques, Phys. Rev. B 69, 144209(2004)
+   Remarks:
+      - R0 = 0.171 / m
+   Names: "m U D P R/R0 R E-E0 Rem Ref"
+   Data: 
+      - [ 1.036, 4.270, 7.130, 5.024, 2.406, 0.4113, 9.117, 1, 1 ]
+      - [ 1.036, 4.280, 6.780, 4.788, 2.617, 0.4475, 9.160, 1, 1 ]
+      - [ 1.036, 4.480, 7.970, 5.892, 2.204, 0.3768, 10.036, 1, 1 ]
+      - [ 1.036, 4.990, 8.310, 6.842, 2.415, 0.4130, 12.450, 1, 1 ]
+      - [ 1.036, 5.970, 9.450, 9.309, 2.620, 0.4481, 17.821, 1, 1 ]
+      - [ 1.036, 7.250, 10.970, 13.123, 2.845, 0.4866, 26.282, 1, 1 ]
+      - [ 1.000, 9.925, 14.200, 24.100, 3.322, 0.5680, 49.253, 1, 2 ]
+      - [ 1.000, 18.700, 23.090, 73.835, 5.260, 0.8994, 174.845, 1, 2 ]
+      - [ 1.000, 23.030, 27.780, 109.401, 5.848, 1.0001, 265.191, 1, 2 ]
+      - [ 1.000, 27.090, 32.470, 150.414, 6.035, 1.0320, 366.935, 1, 2 ]
+      - [ 1.000, 30.050, 35.930, 184.628, 6.111, 1.0449, 451.502, 1, 2 ]
+      - [ 1.000, 32.180, 38.890, 214.003, 5.796, 0.9911, 517.777, 1, 2 ]
+      - [ 1.024, 9.680, 13.550, 21.904, 3.419, 0.5847, 46.852, 2, 3 ]
+      - [ 1.024, 11.770, 15.690, 30.840, 3.909, 0.6684, 69.267, 2, 3 ]
+      - [ 1.024, 13.720, 18.180, 41.655, 3.981, 0.6807, 94.120, 2, 3 ]
+      - [ 1.024, 17.080, 22.480, 64.121, 4.066, 0.6952, 145.864, 2, 3 ]
+      - [ 1.024, 17.700, 23.330, 68.961, 4.047, 0.6920, 156.645, 2, 3 ]
+      - [ 1.024, 18.420, 24.280, 74.689, 4.046, 0.6919, 169.649, 2, 3 ]
+      - [ 1.024, 19.150, 25.110, 80.303, 4.115, 0.7036, 183.362, 2, 3 ]
+      - [ 1.024, 20.110, 26.260, 88.191, 4.170, 0.7131, 202.207, 2, 3 ]
+      - [ 1.024, 21.220, 28.000, 99.225, 4.033, 0.6897, 225.145, 2, 3 ]
+
+D2_double_rusbank:
+   Description: liquid deuterium double shock
+   References:
+      - M. D. Knudson, D. L. Hanson, J. E. Bailey, C. A. Hall, J. R. Assay, C. Deeney, Principal Hugoniot, reverberating wave, and mechanical reshock measurements of liquid deuterium to 400 GPa using plate impact techniques, Phys. Rev. B 69, 144209(2004)
+   Remarks:
+      - R0 = 0.171 / m
+   Names: "m U D P R/R0 R E-E0 U2 P2"
+   Data: 
+      - [ 1.024, 9.680, 13.550, 21.904, 3.419, 0.5847, 46.852, 7.709, 82.100 ]
+
+
+
+
