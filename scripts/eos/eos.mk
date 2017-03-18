@@ -68,6 +68,13 @@ getexpc.dst:
 	$(call CheckCommand,EXPNAME)
 	$(PYTHON) $(ScriptDir)/exp_yaml.py $(EXPYAML)  $(EXPNAME)  "$(EXPCOL)" /dev/stdout | sed 's| |,|g' > expc.$(EXPNAME)
 
+getmodel.dst:
+	$(call CheckCommand,MODELYAML)
+	$(call CheckCommand,MODELFILE)
+	$(PYTHON) $(ScriptDir)/model_yaml.py $(MODELYAML) $(MODELFILE)
+
+
+
 showexp.dst:
 	$(PYTHON) $(ScriptDir)/exp_yaml.py -s $(EXPYAML) "fake"  "fake" "fake"
 

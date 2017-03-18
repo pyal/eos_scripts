@@ -86,7 +86,7 @@ print "$clc_file\n";
     my $l;
     while($l = $inp->getline()){
         my @l = split(" ",$l);
-        next        if (lc($l[0]) ne lc($clc_name) || $l[1] ne "{");
+        next        if (int(@l) == 0 || lc($l[0]) ne lc($clc_name) || $l[1] ne "{");
         shift(@l);shift(@l);
         @line = @l;
         $EndFound = 0;
@@ -116,7 +116,7 @@ sub GetOutBaseName {
 }   ##GetOutName
 sub MakeWinName($) {
    my ($name) = @_;
-   $name =~ s/^\/cygdrive\/(.)/\1:/;
+   $name =~ s/^\/cygdrive\/(.)/$1:/;
    return $name;
 }
 

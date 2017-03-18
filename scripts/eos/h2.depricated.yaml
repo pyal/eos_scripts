@@ -25,6 +25,26 @@ IdealHMet:
     Descr: Pure H FreeE ; no corrections
 
 
+H2Mod_Atom:
+    Config: MolVeight 1 Zero 0 HiT 0 Exp6Part Exp_6_en 12.3475 Exp_6_alph 10.6312 Exp_6_r 3.39569  
+            Exp_6_r0 1.58951  CutDiameter 0.75  IncludePow6 1
+    EOS: FreeEPureRoss
+    Descr: Metall component ? Depricated ?
+    SubstFileName: 
+    Used: 
+
+# //MatterFreeE FreeEPureRoss
+# H2Ross_Mol MolVeight 2 Zero 0 HiT 0 Exp6Part Exp_6_en 36.4 Exp_6_alph 11.1 Exp_6_r 3.43  Exp_6_r0 1.45855  CutDiameter 0.74  IncludePow6 1
+H2Ross_Mol:
+    Config: MolVeight 2 Zero 0 HiT 0 Exp6Part Exp_6_en 36.4 Exp_6_alph 11.1 Exp_6_r 3.43  
+            Exp_6_r0 1.45855  CutDiameter 0.74  IncludePow6 1
+
+    EOS: FreeEPureRoss
+    Descr: Ross paper original. Depricated ?
+    SubstFileName: 
+    Used: 
+
+
 # // FreeEElectronStrict
 # //HElectronBolt                NumElPerAtom 1   MolVeight 1   Gfactor 2  ElMass_ElseNuclear  1 OutBoltzman 1  ColdCurve 0  ColdCurveTempCor 0
 # //HElectronZeroCor                NumElPerAtom 1   MolVeight 1   Gfactor 2  ElMass_ElseNuclear  1 OutBoltzman 0   ColdCurve 0  ColdCurveTempCor 1

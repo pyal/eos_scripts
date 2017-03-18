@@ -36,7 +36,7 @@ def main():
 		Data = dataMap['Data']
 		nArr = Names.split();
 		printArr = []
-		if args.fields == "":
+		if args.fields == "" or args.fields == "''":
 			args.fields = Names
 			
 		for field in args.fields.split():

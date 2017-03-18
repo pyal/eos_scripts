@@ -5,7 +5,10 @@ use Data::Dumper;
 require CfgReader;
 
 package UrsCurve;
-
+##########################################################
+######### Base for EosMarch               ################
+######### Generating / Testing XY splines ################
+##########################################################
 sub Check($$) {
     my ($Cfg, $params) = @_;
     my @params = split(":", $params);

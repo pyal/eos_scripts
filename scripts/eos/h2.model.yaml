@@ -1,8 +1,6 @@
 
 
-# // FreeEElectronStrict
-# HElectronS                NumElPerAtom 1   MolVeight 1   Gfactor 2  ElMass_ElseNuclear  1 OutBoltzman 0  ColdCurve 0  ColdCurveTempCor 0
-# HElectronZero                NumElPerAtom 1   MolVeight 1   Gfactor 2  ElMass_ElseNuclear  1 OutBoltzman 0   ColdCurve 1  ColdCurveTempCor 0
+# Electron component
 
 HElectronS:
     Config: NumElPerAtom 1   MolVeight 1   Gfactor 2  ElMass_ElseNuclear  1 OutBoltzman 0  ColdCurve 0  ColdCurveTempCor 0
@@ -25,14 +23,13 @@ HElectronZero:
 
 
 
-# // FreeEIdeal
-# IdealHMol      CvId 1.5 NMol 2 Zero 0 HiT 0  Tvib 6390 Trot 170.8
-# IdealHAtom   CvId 1.5 NMol 1 Zero 216 HiT -0.69315  Tvib 0 Trot 0
+# Ideal
 
 IdealHMol:
-    Config: CvId 1.5 NMol 2 Zero 0 HiT 0  Tvib 6390 Trot 170.8
+    Config: CvId 1.5 NMol 2 Zero 0 HiT 0  Tvib 6390 Trot 85.4
+    ConfigOld: CvId 1.5 NMol 2 Zero 0 HiT 0  Tvib 6390 Trot 170.8
     EOS: FreeEIdeal
-    Descr: H2 FreeE
+    Descr: H2 FreeE Trot = 85.4 Landau (p159)
            F = Zero+kt*(Evol+Erot+Evib-CvId*log(T)+HiT1);
            HiT1 = HiT + HiAdd
            Trans = M_ProtonMass_K*molveight/(2*M_PI*sqr(M_PlankCros_K));
@@ -41,12 +38,12 @@ IdealHMol:
     Used: MatterSumH2Mol
 
 IdealHAtom:
-    Config: CvId 1.5 NMol 1 Zero 216 HiT -0.69315  Tvib 0 Trot 0
+    Config: CvId 1.5 NMol 1 Zero 218 HiT -0.69315  Tvib 0 Trot 0
     EOS: FreeEIdeal
     Descr: H FreeE ; Added corrections - zero + temp corrections 
             Zero = 216 - Dissosiation energy, HiT - temperature corrections to state energy
-            VERIFICATION for HiT!
     Used: MatterSumH2Atom Mol_Atom
+
 
 IdealHMetTrans:
     Config: CvId 1.5 NMol 1 Zero 60 HiT -0  Tvib 0 Trot 0
@@ -60,31 +57,120 @@ IdealHMetTransSarov:
     Descr: Pure H FreeE ; zero correction
     Used: MatterSumH2MetCorrSarov
 
+#############################################################
+# H2 + dissosiation
+#############################################################
 Mol_Atom:
-    Config: EnterMinimClass PureDis_FindE {
-              FixedNumVolCoefs 0  MinPres  PureDis_Minim1Pres {
-                  MinVal  0.5  MaxVal  5  MaxDenc  2.5  FixedVolumeCoef  0
-              }
-            }
-            EnterList_SubsName_FreeESubstance_SubsMolVeight {
-               Name Mol MolVeight 2 StartProportion 1 RelatVolumeCoef 2 SubstMixtures 1 
-                    MatterFreeE FreeESumMatter {  FileName  mat.bad Substance MatterSumH2Mol    } ;
-               Name Atom MolVeight 1 StartProportion 0 RelatVolumeCoef 1 SubstMixtures 1 
-                    MatterFreeE FreeESumMatter {  FileName  mat.bad Substance MatterSumH2Atom  } ;
-            }
-            EnterListOfVectors_Vector_SubsName_SubsCoef {  {   Mol -1      Atom 2     } }
+    Config: |
+        EnterMinimClass PureDis_FindE {
+                  FixedNumVolCoefs 0  MinPres  PureDis_Minim1Pres {
+                      MinVal  0.5  MaxVal  5  MaxDenc  2.5  FixedVolumeCoef  0
+                  }
+                }
+                EnterList_SubsName_FreeESubstance_SubsMolVeight {
+                   Name Mol MolVeight 2 StartProportion 1 RelatVolumeCoef 2 SubstMixtures 1 
+                        MatterFreeE FreeESumMatter {  FileName  mat.bad Substance MatterSumH2Mol    } ;
+                   Name Atom MolVeight 1 StartProportion 0 RelatVolumeCoef 1 SubstMixtures 1 
+                        MatterFreeE FreeESumMatter {  FileName  mat.bad Substance MatterSumH2Atom  } ;
+                }
+                EnterListOfVectors_Vector_SubsName_SubsCoef {  {   Mol -1      Atom 2     } }
+
     EOS: FreeEDis
     SubstFileName: mat.bad
-    Descr: H2 - H mixture
+    Descr: H2 - H mixture - depricated
     Uses: MatterSumH2Mol MatterSumH2Atom
+    Build: h2_mol_atom.spl    ?h2dis.spl?
+
+
+H2_Mol_Atom_Dis:
+    Config: |
+        EnterList_SubsName_FreeESubstance_SubsMolVeight {
+                Name Mol MolWeight 2 StartProportion 1 StartVolumeCoef 2 SubstMixtures 1 DeriveConst 1
+                    MatterFreeE FreeESumMatter {  FileName  h2.model.cfg Substance MatterSumH2Mol    }
+                Name Atom MolWeight 1 StartProportion 0 StartVolumeCoef 1 SubstMixtures 1 DeriveConst 1
+                    MatterFreeE FreeESumMatter {  FileName  h2.model.cfg Substance MatterSumH2Atom  }
+            }
+
+            EnterListOfVectors_Vector_SubsName_SubsCoef { {   Mol -1      Atom 2     } }
+            PressureMinim  FixedVolumeCoef  0  AddPolicy  0  AlphaMullCoef  1
+            MaxPresMisfit  0.1  StartAddPressure  10  PressureMinParams {
+                Matter  Mol  MinDenc  0.00003  MaxDenc  5  MinVolCoef  0.0001 MaxVolCoef  10000
+                Matter  Atom  MinDenc  0.00003  MaxDenc  5  MinVolCoef  0.0001  MaxVolCoef 10000
+            }
+            NumberMinim   MatName_ClastSize {
+                Matter  Mol  ClasterSize  1
+                Matter  Atom  ClasterSize  1
+            }
+            NumberMinimMin   MatName_ClastSize {
+                Matter  Mol  ClasterSize  1
+                Matter  Atom  ClasterSize  1
+            }
+    EOS: ClcDissociation::FreeEDis2
+    SubstFileName: h2.model.cfg
+    Descr: H2 - H mixture ; Testing ionization....
+    Uses: 
+    Build: H2_Mol_Atom_Dis.spl - not now
+
+H2_Mol_Atom_Ideal_Dis:
+    Config: |
+        EnterList_SubsName_FreeESubstance_SubsMolVeight {
+            Name Mol MolWeight 2 StartProportion 1 StartVolumeCoef 2 SubstMixtures 1 DeriveConst 1
+                MatterFreeE FreeEIdeal {  FileName  h2.model.cfg Substance IdealHMol    }
+            Name Atom MolWeight 1 StartProportion 0 StartVolumeCoef 1 SubstMixtures 1 DeriveConst 1
+                MatterFreeE FreeEIdeal {  FileName  h2.model.cfg Substance IdealHAtom  }
+        }
+
+        EnterListOfVectors_Vector_SubsName_SubsCoef { {   Mol -1      Atom 2     } }
+        PressureMinim  FixedVolumeCoef  0  AddPolicy  0  AlphaMullCoef  1
+        MaxPresMisfit  0.000001  StartAddPressure  0  PressureMinParams {
+            Matter  Mol  MinDenc  0.0000003  MaxDenc  4  MinVolCoef  0.0001 MaxVolCoef  10000
+            Matter  Atom  MinDenc  0.0000003  MaxDenc  4  MinVolCoef  0.0001  MaxVolCoef 10000
+        }
+        NumberMinim   MatName_ClastSize {
+            Matter  Mol  ClasterSize  1
+            Matter  Atom  ClasterSize  1
+        }
+        NumberMinimMin   MatName_ClastSize {
+            Matter  Mol  ClasterSize  1
+            Matter  Atom  ClasterSize  1
+        }
+    EOS: ClcDissociation::FreeEDis2
+    SubstFileName: h2.model.cfg
+    Descr: H2 - H mixture ; Ideal dissosiation test
+    Uses: 
+    Build: 
+
+# ????????????????????????
+# MatterSumH2MolS  {
+#     Coef1   0.5
+# ????????????????????????
+#     Matter1   FreeEPureRoss {  Material_File material.cfg Substance H2Mod_Mol  }
+#     Coef2   1
+#     Matter2   FreeEIdeal   {  Material_File material.cfg Substance IdealHMol  }
+# }
+
+MatterSumH2MolS:
+    Config: |
+        {
+            Coef1   0.5
+            Matter1 FreeEPureRoss {  Material_File material.cfg Substance H2Mod_Mol  }
+            Coef2   1
+            Matter2   FreeEIdeal   {  Material_File mat.bad Substance IdealHMol  }
+        }
+    EOS: FreeESumMatter
+    SubstFileName: mat.bad
+    Descr: H2 Ros + FreeE 
+    Uses: H2Mod_Mol.spl IdealHMol
+    Used: Low temperature ro estimation only!!!! Bad for high temps!!!!
 
 MatterSumH2Mol:
-    Config:  {
-        Coef1   1
-        Matter1   MatterFreeSpl {   H2Mod_Mol.spl }
-        Coef2   1
-        Matter2   FreeEIdeal   {  Material_File mat.bad Substance IdealHMol  }
-    }
+    Config: |
+        {
+            Coef1   1
+            Matter1   MatterFreeSpl {   H2Mod_Mol.spl }
+            Coef2   1
+            Matter2   FreeEIdeal   {  Material_File mat.bad Substance IdealHMol  }
+        }
     EOS: FreeESumMatter
     SubstFileName: mat.bad
     Descr: H2 Ros + FreeE 
@@ -92,94 +178,113 @@ MatterSumH2Mol:
     Used: Mol_Atom
 
 MatterSumH2Atom:
-    Config: {
-        Coef1   1
-        Matter1   MatterFreeSpl  {  H2Mod_Met.spl  }
-        Coef2   1
-        Matter2   FreeEIdeal {  Material_File mat.bad Substance IdealHAtom  }
-    }
+    Config: |
+        {
+            Coef1   1
+            Matter1   MatterFreeSpl  {  H2Mod_Met.spl  }
+            Coef2   1
+            Matter2   FreeEIdeal {  Material_File mat.bad Substance IdealHAtom  }
+        }
     EOS: FreeESumMatter
     SubstFileName: mat.bad
     Descr: H2 Ros + FreeE 
     Uses: H2Mod_Met.spl IdealHAtom
     Used: Mol_Atom
 
+#############################################################
+# H2 + dissosiation END
+#############################################################
+
+
+#############################################################
+# H2 + dielectric - liquid phase transition
+#############################################################
+
 MatterSumH2Met:
-    Config: {
-        Coef1   1
-        Matter1   MatterFreeSpl  { H2Mod_Met.spl  }
-        Coef2   -1
-        Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronZero }
-        Coef2   1
-        Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronS }
-        Coef3   1
-        Matter3   FreeEIdeal     { Material_File mat.bad Substance IdealHMetTrans }
-    }
+    Config: |
+        {
+            Coef1   1
+            Matter1   MatterFreeSpl  { H2Mod_Met.spl  }
+            Coef2   -1
+            Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronZero }
+            Coef2   1
+            Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronS }
+            Coef3   1
+            Matter3   FreeEIdeal     { Material_File mat.bad Substance IdealHMetTrans }
+        }
     EOS: FreeESumMatter
     SubstFileName: mat.bad
     Descr: H2 metall phase
     Uses: H2Mod_Met.spl HElectronZero HElectronS IdealHMetTrans
 
 MatterSumH2MetCorr:
-    Config: {
-        Coef1   1
-        Matter1   MatterFreeSpl  { H2Mod_Met.spl  }
-        Coef2   -1
-        Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronZero  }
-        Coef2   1
-        Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronS }
-        Coef3   1
-        Matter3   FreeEIdeal     { Material_File mat.bad Substance IdealHMetTrans   }
-        Coef4   1
-        Matter4   FreeEFormula   { Material_File mat.bad Substance FormMetCorr  }
-    }
+    Config: |
+        {
+            Coef1   1
+            Matter1   MatterFreeSpl  { H2Mod_Met.spl  }
+            Coef2   -1
+            Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronZero  }
+            Coef2   1
+            Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronS }
+            Coef3   1
+            Matter3   FreeEIdeal     { Material_File mat.bad Substance IdealHMetTrans   }
+            Coef4   1
+            Matter4   FreeEFormula   { Material_File mat.bad Substance FormMetCorr  }
+        }
     EOS: FreeESumMatter
     SubstFileName: mat.bad
-    Descr: H2 metall phase
+    Descr: H2 metall phase. Also used name MatterSumH2MetCorr_NoElCold
     Uses: H2Mod_Met.spl HElectronZero HElectronS IdealHMetTrans FormMetCorr
 
 
 MatterSumH2MetCorrSarov:
-    Config: {
-        Coef1   1
-        Matter1   MatterFreeSpl  { H2Mod_Met.spl  }
-        Coef2   -1
-        Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronZero  }
-        Coef2   1
-        Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronS }
-        Coef3   1
-        Matter3   FreeEIdeal     { Material_File mat.bad Substance IdealHMetTransSarov   }
-        Coef4   1
-        Matter4   FreeEFormula   { Material_File mat.bad Substance FormMetCorr  }
-    }
+    Config: |
+        {
+            Coef1   1
+            Matter1   MatterFreeSpl  { H2Mod_Met.spl  }
+            Coef2   -1
+            Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronZero  }
+            Coef2   1
+            Matter2   FreeEElectronStrict   { Material_File mat.bad Substance HElectronS }
+            Coef3   1
+            Matter3   FreeEIdeal     { Material_File mat.bad Substance IdealHMetTransSarov   }
+            Coef4   1
+            Matter4   FreeEFormula   { Material_File mat.bad Substance FormMetCorr  }
+        }
     EOS: FreeESumMatter
     SubstFileName: mat.bad
     Descr: H2 metall phase
     Uses: H2Mod_Met.spl HElectronZero HElectronS IdealHMetTransSarov FormMetCorr
 
+
+
+
+
+
+
 FormMetCorr:
-    Config: EndSymbol }
-        double MolVeight,Eioniz,Ediss,deltaE,CenterDenc,Width,Eadd;
-        Eioniz=15.4271; //eV/mol
-        Ediss=  432.006; //kJ/mol
-        deltaE=Ediss/2+M_eV_kJ*M_Na*Eioniz;
-        MolVeight=1;
-        CenterDenc=0.3;
-        Width=0.01;
-        Eadd=1/M_PI*atan(((Denc-CenterDenc)/Width));
-        FreeE=deltaE*(0.5-Eadd);
-    }
+    Config: |
+        EndSymbol }
+            double MolVeight,Eioniz,Ediss,deltaE,CenterDenc,Width,Eadd;
+            Eioniz=15.4271; //eV/mol
+            Ediss=  432.006; //kJ/mol
+            deltaE=Ediss/2+M_eV_kJ*M_Na*Eioniz;
+            MolVeight=1;
+            CenterDenc=0.3;
+            Width=0.01;
+            Eadd=1/M_PI*atan(((Denc-CenterDenc)/Width));
+            FreeE=deltaE*(0.5-Eadd);
+        }
     EOS: FreeEFormula
     Descr: Prevent metall state under small denc
     Used: MatterSumH2MetCorr MatterSumH2MetCorrSarov
 
 
 AtomMet_2Phase:
-    Config:  MatHghTemp 
-                FreeESumMatter    {  Material_File mat.bad Substance MatterSumH2MetCorr  }
-             MatLowTemp 
-                FreeEDis          {  Material_File mat.bad Substance Mol_Atom   }
-             Bnd FreeELiqSol_Bnd  {  NameBndSplFile h2_dismet_bnd.bin  }
+    Config: |
+         MatHghTemp FreeESumMatter  {  Material_File mat.bad Substance MatterSumH2MetCorr  }
+                 MatLowTemp FreeEDis        {  Material_File mat.bad Substance Mol_Atom   }
+                 Bnd        FreeELiqSol_Bnd {  NameBndSplFile h2_dismet_bnd.bin  }
 
     EOS: FreeELiqSol
     Descr: Join mol + met phases
@@ -187,11 +292,10 @@ AtomMet_2Phase:
     Used: MatterSumH2MetCorr Mol_Atom h2_dismet_bnd.bin
 
 AtomMet_2PhaseSarov:
-    Config:  MatHghTemp 
-                FreeESumMatter    {  Material_File mat.bad Substance MatterSumH2MetCorrSarov  }
-             MatLowTemp 
-                FreeEDis          {  Material_File mat.bad Substance Mol_Atom   }
-             Bnd FreeELiqSol_Bnd  {  NameBndSplFile h2_dismet_bnd_sarov.bin  }
+    Config: |
+         MatHghTemp FreeESumMatter  {  Material_File mat.bad Substance MatterSumH2MetCorrSarov  }
+                 MatLowTemp FreeEDis        {  Material_File mat.bad Substance Mol_Atom   }
+                 Bnd        FreeELiqSol_Bnd {  NameBndSplFile h2_dismet_bnd_sarov.bin  }
 
     EOS: FreeELiqSol
     Descr: Join mol + met phases
@@ -199,10 +303,303 @@ AtomMet_2PhaseSarov:
     Used: MatterSumH2MetCorrSarov Mol_Atom h2_dismet_bnd_sarov.bin
 
 
+AtomMet_2PhaseSarov_Up:
+    Config: |
+
+        MatHghTemp FreeESumMatter  {  Material_File mat.bad Substance MatterSumH2MetCorrSarov  }
+                MatLowTemp  MatterFreeSpl  {  h2dis.spl   }
+                Bnd FreeELiqSol_Bnd        {  NameBndSplFile h2_dismet_bnd_sarov.bin  }
+
+    EOS: FreeELiqSol
+    Descr: Join mol + met phases (spline instead of Mol_Atom freeE)
+    SubstFileName: mat.bad
+    Used: MatterSumH2MetCorrSarov h2dis.spl h2_dismet_bnd_sarov.bin
+    Build: h2_dis_met_sarov_up.spl ???
 
 
 
 
+
+#############################################################
+# H2 + dielectric - liquid phase transition. END
+#############################################################
+
+
+
+
+##############################################################################################
+# H2 Ross
+##############################################################################################
+
+
+
+
+H2Mod_Mol:
+    Config: MolVeight 2 Zero 0 HiT 0 Exp6Part Exp_6_en 17.8421 Exp_6_alph 10.8997 Exp_6_r 3.86859  
+            Exp_6_r0 2.12375  CutDiameter 0.74  IncludePow6 1
+    EOS: FreeEPureRoss
+    Descr: WorkVersions_2
+    SubstFileName: 
+    Used: 
+    Build: H2Mod_Mol.spl
+
+
+H2Mod_Met:
+    Config: MolVeight 1 Zero 0 HiT 0 Exp6Part Exp_6_en  67.9593  Exp_6_alph 11.3 Exp_6_r 1.74053  
+            Exp_6_r0  0.73974  CutDiameter 0.75  IncludePow6 1
+    EOS: FreeEPureRoss
+    Descr: Metall component ?
+    SubstFileName: 
+    Used: 
+    Build: H2Mod_Met.spl
+
+
+
+# ////////////////////////////////////////////////////////////////
+# ///////////  D2 Untested !!! //////////////////////////////////
+# ////////////////////////////////////////////////////////////////
+
+# ////////////////////////////////////////////////////////////////
+# ///////////       D2 ROSS !!! //////////////////////////////////
+# ////////////////////////////////////////////////////////////////
+
+D2Mol_RosMod:
+    Config: MolVeight 4 Zero 0 HiT 0 Exp6Part Exp_6_en 17.8421 Exp_6_alph 10.8997 Exp_6_r 3.86859  
+            Exp_6_r0 2.12375  CutDiameter 0.74  IncludePow6 1
+
+    EOS: FreeEPureRoss
+    Descr: 
+    SubstFileName: 
+    Used: 
+    Build: D2Mol_RosMod.spl
+    SplGenerator:
+        MatterSpl - depricated
+        blackBox TIvlTable2Spl  IBlackBoxBase -ispline - TMatterSpl
+        urs_curve 
+        UrsCurve_SplConstr - MatterFreeSpl
+        UrsCurve_PT_UnstBnd_Clc - unstable boundary clc
+        UrsCurve_PT_UnstBnd_Binary - generate boundary using boundary clc data
+        UrsCurve_PT_Bnd_Constructor. freeE bnd constructor
+        UrsCurve_PT_Bnd_Binary - generate boundary using boundary clc data
+
+DMet_RosMod:
+    Config: MolVeight 2 Zero 0 HiT 0 Exp6Part Exp_6_en  67.9593  Exp_6_alph 11.3 Exp_6_r 1.74053  
+            Exp_6_r0  0.73974  CutDiameter 0.75  IncludePow6 1
+    EOS: FreeEPureRoss
+    Descr: Metall component ?
+    SubstFileName: 
+    Used: 
+    Build: DMet_RosMod.spl
+
+# ////////////////////////////////////////////////////////////////
+# ///////////  END  D2 ROSS !!! //////////////////////////////////
+# ////////////////////////////////////////////////////////////////
+
+# ////////////////////////////////////////////////////////////////
+# ///////////  D2 IDEAL     !!! //////////////////////////////////
+# ////////////////////////////////////////////////////////////////
+
+
+D2Mol_Ideal:
+    Config: CvId 1.5 NMol 4 Zero 0 HiT 0  Tvib 8980 Trot 43
+    EOS: FreeEIdeal
+    Descr: Original Trot = 242.5 ? Trot = 43 - by Landau
+    SubstFileName: 
+    Used:  MatterSumD2MolS ?
+
+
+DAtom_Ideal:
+    Config: CvId 1.5 NMol 2 Zero 221 HiT -0.69315  Tvib 0 Trot 0
+    EOS: FreeEIdeal
+    Descr: D FreeE ; Added corrections - zero + temp corrections 
+            Zero = 221 - Dissosiation energy, HiT = -log((2s+1)(2l+1))
+
+DMet_Ideal:
+    Config: CvId 1.5 NMol 2 Zero 75 HiT -0.69315  Tvib 0 Trot 0
+    EOS: FreeEIdeal
+    Descr: Pure D FreeE ; zero correction
+    Used: 
+
+# ////////////////////////////////////////////////////////////////
+# ///////////  END D2 IDEAL !!! //////////////////////////////////
+# ////////////////////////////////////////////////////////////////
+
+# ////////////////////////////////////////////////////////////////
+# ///////////   D2 PURE STATES   !!! /////////////////////////////
+# ////////////////////////////////////////////////////////////////
+D2Mol_RossAndIdeal_LowTemp:
+    Config: |
+        {
+            Coef1   0.5
+            Matter1   FreeEPureRoss {  Material_File mat.bad Substance D2Mol_RosMod  }
+            Coef2   1
+            Matter2   FreeEIdeal    {  Material_File mat.bad Substance D2Mol_Ideal  }
+        }
+    EOS: FreeESumMatter
+    Descr: Used for LOW temp density estimations only. Bad for high temp !!!!!
+    SubstFileName: mat.bad
+
+
+D2Mol_RossAndIdeal:
+    Config: |
+        {
+            Coef1   1
+            Matter1   MatterFreeSpl {   D2Mol_RosMod.spl }
+            Coef2   1
+            Matter2   FreeEIdeal    {  Material_File mat.bad Substance D2Mol_Ideal  }
+        }
+    EOS: FreeESumMatter
+    SubstFileName: mat.bad
+    Descr: D2 Ros + FreeE 
+    Uses: D2Mol_RossAndIdeal.spl D2Mol_Ideal
+    Used: Mol_Atom
+
+DAtom_RossAndIdeal:
+    Config: |
+        {
+            Coef1   1
+            Matter1   MatterFreeSpl  {  DMet_RosMod.spl  }
+            Coef2   1
+            Matter2   FreeEIdeal {  Material_File mat.bad Substance DAtom_Ideal  }
+        }
+    EOS: FreeESumMatter
+    SubstFileName: mat.bad
+    Descr: H2 Ros + FreeE 
+    Uses: DAtom_RossAndIdeal.spl DAtom_Ideal
+    Used: Mol_Atom
+
+# ////////////////////////////////////////////////////////////////
+# ///////////  END  D2 PURE STATES   !!! /////////////////////////
+# ////////////////////////////////////////////////////////////////
+
+
+D2_Mol_Atom_Dis:
+    Config: |
+        EnterList_SubsName_FreeESubstance_SubsMolVeight {
+                Name Mol MolWeight 4 StartProportion 1 StartVolumeCoef 2 SubstMixtures 1 DeriveConst 1
+                    MatterFreeE FreeESumMatter {  FileName  h2.model.cfg Substance D2Mol_RossAndIdeal    }
+                Name Atom MolWeight 2 StartProportion 0 StartVolumeCoef 1 SubstMixtures 1 DeriveConst 1
+                    MatterFreeE FreeESumMatter {  FileName  h2.model.cfg Substance DAtom_RossAndIdeal  }
+            }
+
+            EnterListOfVectors_Vector_SubsName_SubsCoef { {   Mol -1      Atom 2     } }
+            PressureMinim  FixedVolumeCoef  0  AddPolicy  0  AlphaMullCoef  1
+            MaxPresMisfit  0.00001  StartAddPressure  10  PressureMinParams {
+                Matter  Mol  MinDenc  0.00003  MaxDenc  5  MinVolCoef  0.0001 MaxVolCoef  10000
+                Matter  Atom  MinDenc  0.00003  MaxDenc  5  MinVolCoef  0.0001  MaxVolCoef 10000
+            }
+            NumberMinim   MatName_ClastSize {
+                Matter  Mol  ClasterSize  1
+                Matter  Atom  ClasterSize  1
+            }
+            NumberMinimMin   MatName_ClastSize {
+                Matter  Mol  ClasterSize  1
+                Matter  Atom  ClasterSize  1
+            }
+
+    EOS: ClcDissociation::FreeEDis2
+    SubstFileName: h2.model.cfg
+    Descr: H2 - H mixture
+    Uses: D2Mol_RossAndIdeal DAtom_RossAndIdeal
+    Build: D2_Mol_Atom_Dis.spl 
+
+D2_Mol_Atom_Ideal_Dis:
+    Config: |
+        EnterList_SubsName_FreeESubstance_SubsMolVeight {
+                Name Mol MolWeight 4 StartProportion 1 StartVolumeCoef 2 SubstMixtures 1 DeriveConst 1
+                    MatterFreeE FreeEIdeal    {  Material_File h2.model.cfg Substance D2Mol_Ideal  }
+                Name Atom MolWeight 2 StartProportion 0 StartVolumeCoef 1 SubstMixtures 1 DeriveConst 1
+                    MatterFreeE FreeEIdeal    {  Material_File h2.model.cfg Substance DAtom_Ideal  }
+            }
+
+            EnterListOfVectors_Vector_SubsName_SubsCoef { {   Mol -1      Atom 2     } }
+            PressureMinim  FixedVolumeCoef  0  AddPolicy  0  AlphaMullCoef  1
+            MaxPresMisfit  0.000001  StartAddPressure  0  PressureMinParams {
+                Matter  Mol  MinDenc  0.00003  MaxDenc  5  MinVolCoef  0.0001 MaxVolCoef  10000
+                Matter  Atom  MinDenc  0.00003  MaxDenc  5  MinVolCoef  0.0001  MaxVolCoef 10000
+            }
+            NumberMinim   MatName_ClastSize {
+                Matter  Mol  ClasterSize  1
+                Matter  Atom  ClasterSize  1
+            }
+            NumberMinimMin   MatName_ClastSize {
+                Matter  Mol  ClasterSize  1
+                Matter  Atom  ClasterSize  1
+            }
+
+    EOS: ClcDissociation::FreeEDis2
+    SubstFileName: h2.model.cfg
+    Descr: H2 - H mixture
+    Uses: D2Mol_RossAndIdeal DAtom_RossAndIdeal
+    Build: D2_Mol_Atom_Dis.spl 
+
+# ////////////////////////////////////////////////////////////////
+# ///////////  DMet electrons        !!! /////////////////////////
+# ////////////////////////////////////////////////////////////////
+
+DMet_ElectronNoCold:
+    Config: NumElPerAtom 1   MolVeight 2   Gfactor 2  ElMass_ElseNuclear  1 OutBoltzman 0  ColdCurve 0  ColdCurveTempCor 0
+    EOS: FreeEElectronStrict
+    Descr: No cold e curve
+
+DMet_ElectronWithCold:
+    Config: NumElPerAtom 1   MolVeight 1   Gfactor 2  ElMass_ElseNuclear  1 OutBoltzman 0   ColdCurve 1  ColdCurveTempCor 0
+    EOS: FreeEElectronStrict
+    Descr: With cold e curve
+    Used: MatterSumH2Met MatterSumH2MetCorr MatterSumH2MetCorrSarov
+
+DMetPatch:
+    Config: |
+        EndSymbol }
+            double MolVeight,Eioniz,Ediss,deltaE,CenterDenc,Width,Eadd;
+            Eioniz=15.4271; //eV/mol
+            Ediss=  432.006; //kJ/mol
+            deltaE=Ediss/2+M_eV_kJ*M_Na*Eioniz;
+            MolVeight=2;
+            CenterDenc=0.6;
+            Width=0.01;
+            Eadd=1/M_PI*atan(((Denc-CenterDenc)/Width));
+            FreeE=deltaE*(0.5-Eadd);
+        }
+    EOS: FreeEFormula
+    Descr: Prevent metall state under small denc
+    Used: MatterSumH2MetCorr MatterSumH2MetCorrSarov
+
+#################################################################
+#########      Pure Metall state  ###############################
+#################################################################
+
+DMet_Ros_Ideal_Electron_Patch_Sum:
+    Config: |
+        {
+            Coef1   1
+            Matter1   MatterFreeSpl  { DMet_RosMod.spl  }
+            Coef2   -1
+            Matter2   FreeEElectronStrict   { Material_File mat.bad Substance DMet_ElectronNoCold  }
+            Coef2   1
+            Matter2   FreeEElectronStrict   { Material_File mat.bad Substance DMet_ElectronWithCold }
+            Coef3   1
+            Matter3   FreeEIdeal            { Material_File mat.bad Substance DMet_Ideal   }
+            Coef4   1
+            Matter4   FreeEFormula          { Material_File mat.bad Substance DMetPatch  }
+        }
+    EOS: FreeESumMatter
+    SubstFileName: mat.bad
+    Descr: D metall phase. Switched sign of electron correction!!!!!!!!!
+    Uses: DMet_RosMod.spl DMet_ElectronNoCold DMet_ElectronWithCold DMet_Ideal DMetPatch
+
+
+
+DMol_Met_Trans:
+    Config: |
+        MatHghTemp FreeESumMatter  {  Material_File mat.bad Substance DMet_Ros_Ideal_Electron_Patch_Sum  }
+                MatLowTemp FreeEDis        {  Material_File mat.bad Substance D2_Mol_Atom_Dis   }
+                Bnd        FreeELiqSol_Bnd {  NameBndSplFile d2_dismet_bnd.bin  }
+
+    EOS: FreeELiqSol
+    Descr: Join mol + met phases
+    SubstFileName: mat.bad
+    Used: MatterSumH2MetCorr Mol_Atom d2_dismet_bnd.bin
 
 
 
